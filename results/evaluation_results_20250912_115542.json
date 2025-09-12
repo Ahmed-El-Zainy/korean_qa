@@ -1,0 +1,96 @@
+{
+  "total_cases": 12,
+  "passed_cases": 0,
+  "failed_cases": 0,
+  "pass_rate": 0.0,
+  "average_score": 0,
+  "threshold": 0.8,
+  "model_name": "gemini-2.0-flash",
+  "evaluation_timestamp": "2025-09-12T11:55:42.620678",
+  "detailed_results": [
+    {
+      "case_index": 0,
+      "input": "\"이번 달 우리 회사 전체 매출은 얼마야?\"",
+      "actual_output": "A: 2025년 1월 삼광 Global 전체 매출은 335.4억원입니다. 이는 당초 사업계획(213.4억원) 대비 57% 초과 달성한 수치이며, 실행계획(307.8억원) 대비도 109% 달성한 성과입니다.",
+      "expected_output": null,
+      "metrics": {}
+    },
+    {
+      "case_index": 1,
+      "input": "\"사업부별 매출 비중이 어떻게 되나요?\"",
+      "actual_output": "A: 2025년 1월 기준 사업부별 매출 비중은 다음과 같습니다:\n\n한국 사업부: 213.0억원 (39.7%)\n베트남 사업부: 38.6억원 (44.1%)\n인도 사업부: 미미한 수준\n윈테크: 미미한 수준 한국과 베트남 사업부가 전체 매출의 약 84%를 차지하고 있습니다.\n",
+      "expected_output": null,
+      "metrics": {}
+    },
+    {
+      "case_index": 2,
+      "input": "\"우리 회사 영업이익률은 몇 %야?\"",
+      "actual_output": "A: 2025년 1월 전사 영업이익률은 3%입니다. 영업이익은 8.97억원이며, 사업부별로는 한국 4%, 베트남 2%, 윈테크는 -7%의 영업이익률을 기록했습니다.\n\n 생산/품질 관련 질문",
+      "expected_output": null,
+      "metrics": {}
+    },
+    {
+      "case_index": 3,
+      "input": "\"TAB S10 도장 공정 수율이 어떻게 되나요?\"",
+      "actual_output": "A: TAB S10 제품의 도장 공정 수율은 평균 98%로 매우 양호합니다. 세부적으로 TAB S10 REAR BODY 도장은 98%, TAB S10 KNOB 도장은 99%의 수율을 보이고 있습니다.",
+      "expected_output": null,
+      "metrics": {}
+    },
+    {
+      "case_index": 4,
+      "input": "\"최근 수율이 낮은 공정이 있나요?\"",
+      "actual_output": "A: 네, 몇 가지 주의가 필요한 공정이 있습니다:\n\nR47 ENCLOSURE, LOWER, BATTERY, LARGE 사출: 59%\nR47 ARM, FRONT RIGHT, UPPER 사출: 80%\nTab S10 FE FRONT BODY 사출: 87% 이 공정들은 90% 미만의 수율로 개선이 필요합니다.",
+      "expected_output": null,
+      "metrics": {}
+    },
+    {
+      "case_index": 5,
+      "input": "\"삼성 폴더블폰 부품(SM-F 시리즈) 생산 현황은?\"",
+      "actual_output": "A: 삼성 폴더블폰 부품 생산이 활발합니다:\n\nSM-F721U: FRONT DECO MAIN/SUB NC 공정 수율 96-97%\nSM-F731U: NC 공정 수율 97%, 조립 수율 100%\nSM-F741U: NC 공정 수율 95%, 레이저 공정 수율 99%\nSM-F936U: NC 및 조립 공정 모두 100% 수율 달성\n 재고 관련 질문",
+      "expected_output": null,
+      "metrics": {}
+    },
+    {
+      "case_index": 6,
+      "input": "\"R47 시리즈 재고 현황이 어떻게 되나요?\"",
+      "actual_output": "A: R47 시리즈 주요 품목 재고 현황:\n\nR47 ENCLOSURE, LOWER, BATTERY, LARGE 가공품: 568 EA (양품)\n기타 R47 부품들은 현재 재고가 없는 상태입니다.\n대부분 게이트 커팅 가공이나 사출 공정을 거치는 부품들입니다.",
+      "expected_output": null,
+      "metrics": {}
+    },
+    {
+      "case_index": 7,
+      "input": "\"C18 제품군 재고가 있나요?\"",
+      "actual_output": "A: C18 제품군은 모두 재고가 0인 상태입니다. CLAMSHELL COVER, ENCLOSURE 등 주요 부품들이 재고 소진 상태이므로 생산 계획 수립이 필요합니다.\n\n 원가 관련 질문",
+      "expected_output": null,
+      "metrics": {}
+    },
+    {
+      "case_index": 8,
+      "input": "\"우리 회사 매출원가율이 높은 이유가 뭐야?\"",
+      "actual_output": "A: 2025년 1월 전사 매출원가율은 92%로 매우 높습니다. 주요 원인은:\n\n매입비(원부자재+외주가공비): 67% - 가장 큰 비중\n노무비: 12%\n제조경비: 11% 특히 베트남 사업부(94%)와 인도 사업부(92%)의 매출원가율이 높아 수익성 개선이 시급합니다.",
+      "expected_output": null,
+      "metrics": {}
+    },
+    {
+      "case_index": 9,
+      "input": "\"실패비용이 얼마나 발생했나요?\"",
+      "actual_output": "A: 2025년 1월 전사 실패비용은 5.16억원(매출 대비 2%)입니다. 사업부별로는:\n\n한국: 0.23억원 (1%)\n베트남: 3.95억원 (2%) - 가장 높음\n인도: 0.48억원 (1%)\n윈테크: 0.50억원 (1%) 베트남 사업부의 실패비용 절감이 필요합니다.\n 작업 관련 질문",
+      "expected_output": null,
+      "metrics": {}
+    },
+    {
+      "case_index": 10,
+      "input": "\"SMF741UB6 조립 작업 시 주의사항이 뭐야?\"",
+      "actual_output": "A: SMF741UB6 FRONT DECO SUB 조립 작업표준서에 따른 주요 주의사항을 확인해야 합니다. 2024년 7월 8일에 조립 부분이 수정된 최신 버전을 참고하시기 바랍니다.",
+      "expected_output": null,
+      "metrics": {}
+    },
+    {
+      "case_index": 11,
+      "input": "\"이번 달 생산성이 가장 좋은 공정은?\"",
+      "actual_output": "A: 다음 공정들이 100% 수율을 달성했습니다:\n\nSM-F936U NC 및 조립 공정\nC18 SHIM 가공 및 사출\nPA3 DECO 아노다이징, 샌딩, 버핑\n대부분의 조립(ASS'Y) 공정 이들 공정은 벤치마킹 대상으로 삼을 수 있습니다.",
+      "expected_output": null,
+      "metrics": {}
+    }
+  ]
+}

@@ -1,0 +1,702 @@
+```json
+✨ You're running DeepEval's latest Answer Relevancy Metric! (using gemini-2.0-flash, strict=False, 
+async_mode=True)...
+**************************************************
+Answer Relevancy Verbose Logs
+**************************************************
+
+Statements:
+[
+    "2025년 1월 삼광 Global 전체 매출은 335.4억원입니다.",
+    "이는 당초 사업계획(213.4억원) 대비 57% 초과 달성한 수치입니다.",
+    "실행계획(307.8억원) 대비도 109% 달성한 성과입니다."
+] 
+ 
+Verdicts:
+[
+    {
+        "verdict": "yes",
+        "reason": null
+    },
+    {
+        "verdict": "yes",
+        "reason": null
+    },
+    {
+        "verdict": "yes",
+        "reason": null
+    }
+]
+ 
+Score: 1.0
+Reason: The score is 1.00 because there were no irrelevant statements, great job!
+
+======================================================================
+**************************************************
+Answer Relevancy Verbose Logs
+**************************************************
+
+Statements:
+[
+    "2025년 1월 기준 사업부별 매출 비중",
+    "한국 사업부: 213.0억원 (39.7%)",
+    "베트남 사업부: 38.6억원 (44.1%)",
+    "인도 사업부: 미미한 수준",
+    "윈테크: 미미한 수준",
+    "한국과 베트남 사업부가 전체 매출의 약 84%를 차지하고 있습니다."
+] 
+ 
+Verdicts:
+[
+    {
+        "verdict": "yes",
+        "reason": null
+    },
+    {
+        "verdict": "yes",
+        "reason": null
+    },
+    {
+        "verdict": "yes",
+        "reason": null
+    },
+    {
+        "verdict": "yes",
+        "reason": null
+    },
+    {
+        "verdict": "yes",
+        "reason": null
+    },
+    {
+        "verdict": "yes",
+        "reason": null
+    }
+]
+ 
+Score: 1.0
+Reason: The score is 1.00 because there were no irrelevant statements, indicating perfect relevancy! Great job!
+
+======================================================================
+**************************************************
+Answer Relevancy Verbose Logs
+**************************************************
+
+Statements:
+[
+    "네, 몇 가지 주의가 필요한 공정이 있습니다",
+    "R47 ENCLOSURE, LOWER, BATTERY, LARGE 사출: 59%",
+    "R47 ARM, FRONT RIGHT, UPPER 사출: 80%",
+    "Tab S10 FE FRONT BODY 사출: 87%",
+    "이 공정들은 90% 미만의 수율로 개선이 필요합니다"
+] 
+ 
+Verdicts:
+[
+    {
+        "verdict": "yes",
+        "reason": null
+    },
+    {
+        "verdict": "yes",
+        "reason": null
+    },
+    {
+        "verdict": "yes",
+        "reason": null
+    },
+    {
+        "verdict": "yes",
+        "reason": null
+    },
+    {
+        "verdict": "yes",
+        "reason": null
+    }
+]
+ 
+Score: 1.0
+Reason: The score is 1.00 because there were no irrelevant statements, indicating perfect relevancy! Great job!
+
+======================================================================
+**************************************************
+Answer Relevancy Verbose Logs
+**************************************************
+
+Statements:
+[
+    "2025년 1월 전사 매출원가율은 92%로 매우 높습니다.",
+    "매입비(원부자재+외주가공비): 67% - 가장 큰 비중",
+    "노무비: 12%",
+    "제조경비: 11%",
+    "베트남 사업부(94%)와 인도 사업부(92%)의 매출원가율이 높아 수익성 개선이 시급합니다."
+] 
+ 
+Verdicts:
+[
+    {
+        "verdict": "yes",
+        "reason": null
+    },
+    {
+        "verdict": "yes",
+        "reason": null
+    },
+    {
+        "verdict": "yes",
+        "reason": null
+    },
+    {
+        "verdict": "yes",
+        "reason": null
+    },
+    {
+        "verdict": "yes",
+        "reason": null
+    }
+]
+ 
+Score: 1.0
+Reason: The answer relevancy score is perfect at 1.00! Great job maintaining focus and relevance.
+
+======================================================================
+**************************************************
+**************************************************
+
+Statements:
+[
+    "SMF741UB6 FRONT DECO SUB 조립 작업표준서에 따른 주요 주의사항을 확인해야 합니다.",
+    "2024년 7월 8일에 조립 부분이 수정된 최신 버전을 참고하시기 바랍니다."
+] 
+ 
+Verdicts:
+[
+    {
+        "verdict": "yes",
+        "reason": null
+    },
+    {
+        "verdict": "yes",
+        "reason": null
+    }
+]
+ 
+Score: 1.0
+Reason: The score is 1.00 because there were no irrelevant statements, indicating perfect alignment with the 
+user's query! Great job!
+
+======================================================================
+**************************************************
+Answer Relevancy Verbose Logs
+**************************************************
+
+Statements:
+[
+    "TAB S10 제품의 도장 공정 수율은 평균 98%로 매우 양호합니다.",
+    "TAB S10 REAR BODY 도장은 98%의 수율을 보이고 있습니다.",
+    "TAB S10 KNOB 도장은 99%의 수율을 보이고 있습니다."
+] 
+ 
+Verdicts:
+[
+    {
+        "verdict": "yes",
+        "reason": null
+    },
+    {
+        "verdict": "yes",
+        "reason": null
+    },
+    {
+        "verdict": "yes",
+        "reason": null
+    }
+]
+ 
+Score: 1.0
+Reason: The score is 1.00 because there were no irrelevant statements, indicating perfect relevancy! Great job!
+
+======================================================================
+**************************************************
+Answer Relevancy Verbose Logs
+**************************************************
+
+Statements:
+[
+    "2025년 1월 전사 영업이익률은 3%입니다.",
+    "영업이익은 8.97억원입니다.",
+    "사업부별로는 한국 4%입니다.",
+    "베트남 2%입니다.",
+    "윈테크는 -7%의 영업이익률을 기록했습니다.",
+    "생산/품질 관련 질문"
+] 
+ 
+Verdicts:
+[
+    {
+        "verdict": "yes",
+        "reason": null
+    },
+    {
+        "verdict": "yes",
+        "reason": null
+    },
+    {
+        "verdict": "yes",
+        "reason": null
+    },
+    {
+        "verdict": "yes",
+        "reason": null
+    },
+    {
+        "verdict": "yes",
+        "reason": null
+    },
+    {
+        "verdict": "no",
+        "reason": "This statement is about the topic of the question, not the \uc601\uc5c5\uc774\uc775\ub960."
+    }
+]
+ 
+Score: 0.8333333333333334
+Reason: The score is 0.83 because the response contains a statement about the topic of the question, rather 
+than directly addressing the 영업이익률, making it partially irrelevant.
+
+======================================================================
+**************************************************
+Answer Relevancy Verbose Logs
+**************************************************
+
+Statements:
+[
+    "2025년 1월 전사 실패비용은 5.16억원(매출 대비 2%)입니다.",
+    "한국: 0.23억원 (1%)",
+    "베트남: 3.95억원 (2%) - 가장 높음",
+    "인도: 0.48억원 (1%)",
+    "윈테크: 0.50억원 (1%)",
+    "베트남 사업부의 실패비용 절감이 필요합니다.",
+    "작업 관련 질문"
+] 
+ 
+Verdicts:
+[
+    {
+        "verdict": "yes",
+        "reason": null
+    },
+    {
+        "verdict": "yes",
+        "reason": null
+    },
+    {
+        "verdict": "yes",
+        "reason": null
+    },
+    {
+        "verdict": "yes",
+        "reason": null
+    },
+    {
+        "verdict": "yes",
+        "reason": null
+    },
+    {
+        "verdict": "yes",
+        "reason": null
+    },
+    {
+        "verdict": "no",
+        "reason": "This statement is a question about work, not about the cost of failure."
+    }
+]
+ 
+Score: 0.8571428571428571
+Reason: The score is 0.86 because there was a question about work that was irrelevant to the cost of failure, 
+but overall the response was still pretty relevant!
+
+======================================================================
+**************************************************
+Answer Relevancy Verbose Logs
+**************************************************
+
+Statements:
+[
+    "다음 공정들이 100% 수율을 달성했습니다",
+    "SM-F936U NC 및 조립 공정",
+    "C18 SHIM 가공 및 사출",
+    "PA3 DECO 아노다이징, 샌딩, 버핑",
+    "대부분의 조립(ASS'Y) 공정",
+    "이들 공정은 벤치마킹 대상으로 삼을 수 있습니다"
+] 
+ 
+Verdicts:
+[
+    {
+        "verdict": "idk",
+        "reason": null
+    },
+    {
+        "verdict": "yes",
+        "reason": null
+    },
+    {
+        "verdict": "yes",
+        "reason": null
+    },
+    {
+        "verdict": "yes",
+        "reason": null
+    },
+    {
+        "verdict": "yes",
+        "reason": null
+    },
+    {
+        "verdict": "idk",
+        "reason": null
+    }
+]
+ 
+Score: 1.0
+Reason: The answer relevancy score is perfect! Great job!
+
+======================================================================
+**************************************************
+Answer Relevancy Verbose Logs
+**************************************************
+
+Statements:
+[
+    "C18 제품군은 모두 재고가 0인 상태입니다.",
+    "CLAMSHELL COVER, ENCLOSURE 등 주요 부품들이 재고 소진 상태이므로 생산 계획 수립이 필요합니다.",
+    "원가 관련 질문"
+] 
+ 
+Verdicts:
+[
+    {
+        "verdict": "yes",
+        "reason": null
+    },
+    {
+        "verdict": "idk",
+        "reason": null
+    },
+    {
+        "verdict": "no",
+        "reason": "The statement is about cost, not about the availability of C18 products."
+    }
+]
+ 
+Score: 0.6666666666666666
+Reason: The score is 0.67 because the response contains information about cost, which is not directly related 
+to the question about the availability of C18 products. However, it still addresses the general topic of C18 
+products, hence the non-zero score.
+
+======================================================================
+**************************************************
+Answer Relevancy Verbose Logs
+**************************************************
+
+Statements:
+[
+    "삼성 폴더블폰 부품 생산이 활발합니다",
+    "SM-F721U: FRONT DECO MAIN/SUB NC 공정 수율 96-97%",
+    "SM-F731U: NC 공정 수율 97%, 조립 수율 100%",
+    "SM-F741U: NC 공정 수율 95%, 레이저 공정 수율 99%",
+    "SM-F936U: NC 및 조립 공정 모두 100% 수율 달성",
+    "재고 관련 질문"
+] 
+ 
+Verdicts:
+[
+    {
+        "verdict": "yes",
+        "reason": null
+    },
+    {
+        "verdict": "yes",
+        "reason": null
+    },
+    {
+        "verdict": "yes",
+        "reason": null
+    },
+    {
+        "verdict": "yes",
+        "reason": null
+    },
+    {
+        "verdict": "yes",
+        "reason": null
+    },
+    {
+        "verdict": "no",
+        "reason": "The statement is about inventory, which is not directly related to the production status of 
+Samsung foldable phone parts."
+    }
+]
+ 
+Score: 0.8333333333333334
+Reason: The score is 0.83 because the output contains information about inventory, which is not directly 
+related to the production status of Samsung foldable phone parts, but it still provides some relevant 
+information.
+
+======================================================================
+**************************************************
+Answer Relevancy Verbose Logs
+**************************************************
+
+Statements:
+[
+    "R47 시리즈 주요 품목 재고 현황:",
+    "R47 ENCLOSURE, LOWER, BATTERY, LARGE 가공품: 568 EA (양품)",
+    "기타 R47 부품들은 현재 재고가 없는 상태입니다.",
+    "대부분 게이트 커팅 가공이나 사출 공정을 거치는 부품들입니다."
+] 
+ 
+Verdicts:
+[
+    {
+        "verdict": "yes",
+        "reason": null
+    },
+    {
+        "verdict": "yes",
+        "reason": null
+    },
+    {
+        "verdict": "yes",
+        "reason": null
+    },
+    {
+        "verdict": "idk",
+        "reason": null
+    }
+]
+ 
+Score: 1.0
+Reason: The answer relevancy score is 1.00 because there were no irrelevant statements, indicating perfect 
+alignment with the input! Great job!
+
+======================================================================
+
+
+======================================================================
+
+Metrics Summary
+
+  - ✅ Answer Relevancy (score: 1.0, threshold: 0.8, strict: False, evaluation model: gemini-2.0-flash, reason: The score is 1.00 because there were no irrelevant statements, great job!, error: None)
+
+For test case:
+
+  - input: "이번 달 우리 회사 전체 매출은 얼마야?"
+  - actual output: A: 2025년 1월 삼광 Global 전체 매출은 335.4억원입니다. 이는 당초 사업계획(213.4억원) 대비 57% 초과 달성한 수치이며, 실행계획(307.8억원) 대비도 109% 달성한 성과입니다.
+  - expected output: None
+  - context: []
+  - retrieval context: []
+
+======================================================================
+
+Metrics Summary
+
+  - ✅ Answer Relevancy (score: 1.0, threshold: 0.8, strict: False, evaluation model: gemini-2.0-flash, reason: The score is 1.00 because there were no irrelevant statements, indicating perfect relevancy! Great job!, error: None)
+
+For test case:
+
+  - input: "사업부별 매출 비중이 어떻게 되나요?"
+  - actual output: A: 2025년 1월 기준 사업부별 매출 비중은 다음과 같습니다:
+
+한국 사업부: 213.0억원 (39.7%)
+베트남 사업부: 38.6억원 (44.1%)
+인도 사업부: 미미한 수준
+윈테크: 미미한 수준 한국과 베트남 사업부가 전체 매출의 약 84%를 차지하고 있습니다.
+
+  - expected output: None
+  - context: []
+  - retrieval context: []
+
+======================================================================
+
+Metrics Summary
+
+  - ✅ Answer Relevancy (score: 1.0, threshold: 0.8, strict: False, evaluation model: gemini-2.0-flash, reason: The score is 1.00 because there were no irrelevant statements, indicating perfect relevancy! Great job!, error: None)
+
+For test case:
+
+  - input: "최근 수율이 낮은 공정이 있나요?"
+  - actual output: A: 네, 몇 가지 주의가 필요한 공정이 있습니다:
+
+R47 ENCLOSURE, LOWER, BATTERY, LARGE 사출: 59%
+R47 ARM, FRONT RIGHT, UPPER 사출: 80%
+Tab S10 FE FRONT BODY 사출: 87% 이 공정들은 90% 미만의 수율로 개선이 필요합니다.
+  - expected output: None
+  - context: []
+  - retrieval context: []
+
+======================================================================
+
+Metrics Summary
+
+  - ✅ Answer Relevancy (score: 1.0, threshold: 0.8, strict: False, evaluation model: gemini-2.0-flash, reason: The answer relevancy score is perfect at 1.00! Great job maintaining focus and relevance., error: None)
+
+For test case:
+
+  - input: "우리 회사 매출원가율이 높은 이유가 뭐야?"
+  - actual output: A: 2025년 1월 전사 매출원가율은 92%로 매우 높습니다. 주요 원인은:
+
+매입비(원부자재+외주가공비): 67% - 가장 큰 비중
+노무비: 12%
+제조경비: 11% 특히 베트남 사업부(94%)와 인도 사업부(92%)의 매출원가율이 높아 수익성 개선이 시급합니다.
+  - expected output: None
+  - context: []
+  - retrieval context: []
+
+======================================================================
+
+Metrics Summary
+
+  - ✅ Answer Relevancy (score: 1.0, threshold: 0.8, strict: False, evaluation model: gemini-2.0-flash, reason: The score is 1.00 because there were no irrelevant statements, indicating perfect alignment with the user's query! Great job!, error: None)
+
+For test case:
+
+  - input: "SMF741UB6 조립 작업 시 주의사항이 뭐야?"
+  - actual output: A: SMF741UB6 FRONT DECO SUB 조립 작업표준서에 따른 주요 주의사항을 확인해야 합니다. 2024년 7월 8일에 조립 부분이 수정된 최신 버전을 참고하시기 바랍니다.
+  - expected output: None
+  - context: []
+  - retrieval context: []
+
+======================================================================
+
+Metrics Summary
+
+  - ✅ Answer Relevancy (score: 1.0, threshold: 0.8, strict: False, evaluation model: gemini-2.0-flash, reason: The score is 1.00 because there were no irrelevant statements, indicating perfect relevancy! Great job!, error: None)
+
+For test case:
+
+  - input: "TAB S10 도장 공정 수율이 어떻게 되나요?"
+  - actual output: A: TAB S10 제품의 도장 공정 수율은 평균 98%로 매우 양호합니다. 세부적으로 TAB S10 REAR BODY 도장은 98%, TAB S10 KNOB 도장은 99%의 수율을 보이고 있습니다.
+  - expected output: None
+  - context: []
+  - retrieval context: []
+
+======================================================================
+
+Metrics Summary
+
+  - ✅ Answer Relevancy (score: 0.8333333333333334, threshold: 0.8, strict: False, evaluation model: gemini-2.0-flash, reason: The score is 0.83 because the response contains a statement about the topic of the question, rather than directly addressing the 영업이익률, making it partially irrelevant., error: None)
+
+For test case:
+
+  - input: "우리 회사 영업이익률은 몇 %야?"
+  - actual output: A: 2025년 1월 전사 영업이익률은 3%입니다. 영업이익은 8.97억원이며, 사업부별로는 한국 4%, 베트남 2%, 윈테크는 -7%의 영업이익률을 기록했습니다.
+
+ 생산/품질 관련 질문
+  - expected output: None
+  - context: []
+  - retrieval context: []
+
+======================================================================
+
+Metrics Summary
+
+  - ✅ Answer Relevancy (score: 0.8571428571428571, threshold: 0.8, strict: False, evaluation model: gemini-2.0-flash, reason: The score is 0.86 because there was a question about work that was irrelevant to the cost of failure, but overall the response was still pretty relevant!, error: None)
+
+For test case:
+
+  - input: "실패비용이 얼마나 발생했나요?"
+  - actual output: A: 2025년 1월 전사 실패비용은 5.16억원(매출 대비 2%)입니다. 사업부별로는:
+
+한국: 0.23억원 (1%)
+베트남: 3.95억원 (2%) - 가장 높음
+인도: 0.48억원 (1%)
+윈테크: 0.50억원 (1%) 베트남 사업부의 실패비용 절감이 필요합니다.
+ 작업 관련 질문
+  - expected output: None
+  - context: []
+  - retrieval context: []
+
+======================================================================
+
+Metrics Summary
+
+  - ✅ Answer Relevancy (score: 1.0, threshold: 0.8, strict: False, evaluation model: gemini-2.0-flash, reason: The answer relevancy score is perfect! Great job!, error: None)
+
+For test case:
+
+  - input: "이번 달 생산성이 가장 좋은 공정은?"
+  - actual output: A: 다음 공정들이 100% 수율을 달성했습니다:
+
+SM-F936U NC 및 조립 공정
+C18 SHIM 가공 및 사출
+PA3 DECO 아노다이징, 샌딩, 버핑
+대부분의 조립(ASS'Y) 공정 이들 공정은 벤치마킹 대상으로 삼을 수 있습니다.
+  - expected output: None
+  - context: []
+  - retrieval context: []
+
+======================================================================
+
+Metrics Summary
+
+  - ❌ Answer Relevancy (score: 0.6666666666666666, threshold: 0.8, strict: False, evaluation model: gemini-2.0-flash, reason: The score is 0.67 because the response contains information about cost, which is not directly related to the question about the availability of C18 products. However, it still addresses the general topic of C18 products, hence the non-zero score., error: None)
+
+For test case:
+
+  - input: "C18 제품군 재고가 있나요?"
+  - actual output: A: C18 제품군은 모두 재고가 0인 상태입니다. CLAMSHELL COVER, ENCLOSURE 등 주요 부품들이 재고 소진 상태이므로 생산 계획 수립이 필요합니다.
+
+ 원가 관련 질문
+  - expected output: None
+  - context: []
+  - retrieval context: []
+
+======================================================================
+
+Metrics Summary
+
+  - ✅ Answer Relevancy (score: 0.8333333333333334, threshold: 0.8, strict: False, evaluation model: gemini-2.0-flash, reason: The score is 0.83 because the output contains information about inventory, which is not directly related to the production status of Samsung foldable phone parts, but it still provides some relevant information., error: None)
+
+For test case:
+
+  - input: "삼성 폴더블폰 부품(SM-F 시리즈) 생산 현황은?"
+  - actual output: A: 삼성 폴더블폰 부품 생산이 활발합니다:
+
+SM-F721U: FRONT DECO MAIN/SUB NC 공정 수율 96-97%
+SM-F731U: NC 공정 수율 97%, 조립 수율 100%
+SM-F741U: NC 공정 수율 95%, 레이저 공정 수율 99%
+SM-F936U: NC 및 조립 공정 모두 100% 수율 달성
+ 재고 관련 질문
+  - expected output: None
+  - context: []
+  - retrieval context: []
+
+======================================================================
+
+Metrics Summary
+
+  - ✅ Answer Relevancy (score: 1.0, threshold: 0.8, strict: False, evaluation model: gemini-2.0-flash, reason: The answer relevancy score is 1.00 because there were no irrelevant statements, indicating perfect alignment with the input! Great job!, error: None)
+
+For test case:
+
+  - input: "R47 시리즈 재고 현황이 어떻게 되나요?"
+  - actual output: A: R47 시리즈 주요 품목 재고 현황:
+
+R47 ENCLOSURE, LOWER, BATTERY, LARGE 가공품: 568 EA (양품)
+기타 R47 부품들은 현재 재고가 없는 상태입니다.
+대부분 게이트 커팅 가공이나 사출 공정을 거치는 부품들입니다.
+  - expected output: None
+  - context: []
+  - retrieval context: []
+
+======================================================================
+
+Overall Metric Pass Rates
+
+Answer Relevancy: 91.67% pass rate
+
+======================================================================
+
+
+```

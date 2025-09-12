@@ -1,0 +1,40 @@
+# Korean Q&A Evaluation System Configuration
+
+# Model Configuration
+gemini_model: models/gemini-2.5-flash
+
+# Evaluation Settings
+evaluation:
+  threshold: 0.8
+  verbose_mode: true
+  max_retries: 3
+  timeout_seconds: 30
+
+# Dataset Settings
+dataset:
+  input_column: "input"
+  output_column: "expected_output"
+  context_column: null
+  
+# Logging Configuration
+logging:
+  level: "INFO"
+  max_file_size_mb: 10
+  backup_count: 5
+  
+# Output Settings
+output:
+  results_dir: "results"
+  logs_dir: "logs"
+  save_detailed_results: true
+  
+# Metrics Configuration
+metrics:
+  answer_relevancy:
+    enabled: true
+    threshold: 0.8
+    verbose_mode: true
+    
+  contextual_precision:
+    enabled: false
+    threshold: 0.8

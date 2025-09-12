@@ -1,732 +1,280 @@
+---
+title: eval_sales_korean_agent
+app_file: gradio_demo.py
+sdk: gradio
+sdk_version: 5.40.0
+---
+# Korean Q&A Evaluation System
 
+A comprehensive evaluation framework for Korean language Q&A systems using DeepEval, designed to assess answer relevancy and quality for business intelligence queries.
 
+## Overview
 
+This project evaluates Korean language question-answering systems using Google's Gemini model through the DeepEval framework. It focuses on business-related queries covering financial metrics, production data, and operational insights.
 
-### Evaluation using deepeval
-- code:
+## Features
+
+### 🔍 Evaluation Capabilities
+- **Answer Relevancy Evaluation**: Measures how well answers address the input questions
+- **Korean Language Support**: Specialized for Korean business terminology and context
+- **Comprehensive Metrics**: Detailed scoring with verbose logging and explanations
+- **CSV Dataset Integration**: Easy data loading from structured CSV files
+- **Gemini Model Integration**: Leverages Google's latest Gemini 2.0 Flash model
+
+### 🌐 Interactive Demos
+- **Gradio Interface**: User-friendly web interface with real-time evaluation
+- **Streamlit Dashboard**: Professional analytics dashboard with advanced visualizations
+- **Single Question Evaluation**: Test individual Q&A pairs instantly
+- **Batch Dataset Processing**: Evaluate entire datasets with progress tracking
+- **Public Sharing**: Generate shareable links for collaborative evaluation
+
+### 📊 Advanced Visualizations
+- **Score Distribution Histograms**: Understand score patterns across your dataset
+- **Pass/Fail Analytics**: Visual breakdown of success rates
+- **Metrics Comparison Charts**: Compare different evaluation metrics
+- **Text Length Analysis**: Correlation between answer length and scores
+- **Interactive Tables**: Sortable, filterable results with detailed breakdowns
+- **Export Capabilities**: Download results in JSON format for further analysis
+
+## Project Structure
+
+```
+├── src/                    # Source code modules
+│   ├── __init__.py
+│   ├── config.py          # Configuration management
+│   ├── logger.py          # Logging setup and utilities
+│   ├── dataset_loader.py  # Dataset loading and processing
+│   ├── evaluator.py       # Main evaluation engine
+│   └── utils.py           # Utility functions
+├── assets/
+│   └── bench_korean.csv   # Korean Q&A benchmark dataset
+├── logs/                  # Log files (auto-created)
+├── results/               # Evaluation results (auto-created)
+├── main.py               # Main entry point
+├── run_evaluation.py     # Simple runner script
+├── deep_eval.py          # Legacy script (deprecated)
+├── config.yaml           # Configuration file
+├── .env                  # Environment variables
+├── requirements.txt      # Python dependencies
+└── README.md            # Project documentation
+```
+
+## Dataset
+
+The benchmark dataset (`assets/bench_korean.csv`) contains Korean business Q&A pairs covering:
+
+- **Financial Metrics**: Revenue, profit margins, cost analysis
+- **Production Data**: Manufacturing yields, process efficiency
+- **Operational Insights**: Inventory status, departmental performance
+- **Quality Control**: Failure costs, process optimization
+
+Sample questions include:
+- "이번 달 우리 회사 전체 매출은 얼마야?" (What's our company's total revenue this month?)
+- "사업부별 매출 비중이 어떻게 되나요?" (What's the revenue distribution by business unit?)
+- "최근 수율이 낮은 공정이 있나요?" (Are there any processes with low yields recently?)
+
+## Installation
+
+1. Clone the repository:
+```bash
+git clone <repository-url>
+cd eval_Korean_qa
+```
+
+2. Install dependencies:
+```bash
+pip install -r requirements.txt
+```
+
+3. Set up your Google AI API key in `deep_eval.py`:
 ```python
-from deepeval import evaluate
-from deepeval.dataset import EvaluationDataset
-from deepeval.test_case import LLMTestCase
-from deepeval.metrics import AnswerRelevancyMetric, ContextualPrecisionMetric
-import pandas as pd
-from deepeval.models import GeminiModel
+GOOGLEAI_API_KEY = "your-api-key-here"
+```
 
-EVAL_MODEL = "gemini-2.0-flash"
-GOOGLEAI_API_KEY = ""
+## Usage
 
-eval_model = GeminiModel(model_name=EVAL_MODEL, api_key=GOOGLEAI_API_KEY)
-answer_relevancy_metric = AnswerRelevancyMetric(threshold=0.8, model=eval_model,verbose_mode=True)
+### 🌐 Live Demo Interfaces
 
-dataset = EvaluationDataset()
-dataset.add_test_cases_from_csv_file(
-    file_path="/Users/ahmedmostafa/Downloads/eval_Korean_qa/assets/bench_korean.csv",
-    input_col_name="input",
-    actual_output_col_name="expected_output",
+#### Gradio Demo (Recommended)
+Interactive web interface with real-time evaluation and visualizations:
+
+```bash
+python launch_gradio.py
+```
+
+- **Local**: http://localhost:7860
+- **Public**: Shareable link generated automatically
+- **Features**: Single evaluation, batch processing, interactive charts
+
+#### Streamlit Demo
+Professional dashboard interface:
+
+```bash
+python launch_streamlit.py
+```
+
+- **Local**: http://localhost:8501
+- **Features**: Advanced visualizations, detailed analytics, download results
+
+### 🖥️ Command Line Interface
+
+#### Quick Start
+
+Run evaluation with default settings:
+
+```bash
+python run_evaluation.py
+```
+
+#### Advanced Usage
+
+Run evaluation with custom parameters:
+
+```bash
+python main.py --dataset assets/bench_korean.csv --threshold 0.8 --verbose --log-level INFO
+```
+
+#### Command Line Options
+
+```bash
+python main.py --help
+```
+
+Available options:
+- `--config`: Path to configuration file (default: src/config.yaml)
+- `--dataset`: Path to dataset CSV file (default: assets/bench_korean.csv)
+- `--output`: Output path for results (optional)
+- `--log-level`: Logging level (DEBUG, INFO, WARNING, ERROR)
+- `--threshold`: Evaluation threshold (default: 0.8)
+- `--verbose`: Enable verbose evaluation mode
+
+### 📊 Visualization Features
+
+Both demo interfaces include:
+
+- **Score Distribution Histograms**: Visual distribution of evaluation scores
+- **Pass/Fail Pie Charts**: Success rate visualization
+- **Metrics Comparison**: Side-by-side metric analysis
+- **Score vs Length Analysis**: Correlation between text length and scores
+- **Interactive Tables**: Detailed results with sorting and filtering
+- **Export Functionality**: Download results in JSON format
+
+### 🔧 Programmatic Usage
+
+```python
+from src.config import Config
+from src.dataset_loader import DatasetLoader
+from src.evaluator import KoreanQAEvaluator
+from src.logger import setup_logging
+from src.visualization import EvaluationVisualizer
+
+# Setup logging
+logger_setup = setup_logging()
+
+# Load configuration
+config = Config("src/config.yaml")
+
+# Load dataset
+dataset_loader = DatasetLoader()
+dataset = dataset_loader.load_from_csv("assets/bench_korean.csv")
+
+# Run evaluation
+evaluator = KoreanQAEvaluator(
+    model_name=config.gemini_model,
+    api_key=config.google_api_key
 )
-evaluate(dataset.test_cases, [answer_relevancy_metric])
+results = evaluator.evaluate_dataset(dataset)
+
+# Create visualizations
+visualizer = EvaluationVisualizer()
+score_hist = visualizer.create_score_histogram(results)
+pie_chart = visualizer.create_pass_fail_pie_chart(results)
 ```
 
+## Evaluation Metrics
 
-```json
-✨ You're running DeepEval's latest Answer Relevancy Metric! (using gemini-2.0-flash, strict=False, 
-async_mode=True)...
-**************************************************
-Answer Relevancy Verbose Logs
-**************************************************
+### Answer Relevancy
+- **Threshold**: 0.8 (configurable)
+- **Model**: Gemini 2.0 Flash
+- **Scoring**: 0.0 to 1.0 scale
+- **Verbose Mode**: Detailed statement-by-statement analysis
 
-Statements:
-[
-    "2025년 1월 삼광 Global 전체 매출은 335.4억원입니다.",
-    "이는 당초 사업계획(213.4억원) 대비 57% 초과 달성한 수치입니다.",
-    "실행계획(307.8억원) 대비도 109% 달성한 성과입니다."
-] 
- 
-Verdicts:
-[
-    {
-        "verdict": "yes",
-        "reason": null
-    },
-    {
-        "verdict": "yes",
-        "reason": null
-    },
-    {
-        "verdict": "yes",
-        "reason": null
-    }
-]
- 
-Score: 1.0
-Reason: The score is 1.00 because there were no irrelevant statements, great job!
+### Results Interpretation
 
-======================================================================
-**************************************************
-Answer Relevancy Verbose Logs
-**************************************************
+- **Score ≥ 0.8**: Pass (relevant answer)
+- **Score < 0.8**: Fail (needs improvement)
+- **Overall Pass Rate**: Percentage of test cases meeting threshold
 
-Statements:
-[
-    "2025년 1월 기준 사업부별 매출 비중",
-    "한국 사업부: 213.0억원 (39.7%)",
-    "베트남 사업부: 38.6억원 (44.1%)",
-    "인도 사업부: 미미한 수준",
-    "윈테크: 미미한 수준",
-    "한국과 베트남 사업부가 전체 매출의 약 84%를 차지하고 있습니다."
-] 
- 
-Verdicts:
-[
-    {
-        "verdict": "yes",
-        "reason": null
-    },
-    {
-        "verdict": "yes",
-        "reason": null
-    },
-    {
-        "verdict": "yes",
-        "reason": null
-    },
-    {
-        "verdict": "yes",
-        "reason": null
-    },
-    {
-        "verdict": "yes",
-        "reason": null
-    },
-    {
-        "verdict": "yes",
-        "reason": null
-    }
-]
- 
-Score: 1.0
-Reason: The score is 1.00 because there were no irrelevant statements, indicating perfect relevancy! Great job!
+## Configuration
 
-======================================================================
-**************************************************
-Answer Relevancy Verbose Logs
-**************************************************
+Key parameters in `deep_eval.py`:
 
-Statements:
-[
-    "네, 몇 가지 주의가 필요한 공정이 있습니다",
-    "R47 ENCLOSURE, LOWER, BATTERY, LARGE 사출: 59%",
-    "R47 ARM, FRONT RIGHT, UPPER 사출: 80%",
-    "Tab S10 FE FRONT BODY 사출: 87%",
-    "이 공정들은 90% 미만의 수율로 개선이 필요합니다"
-] 
- 
-Verdicts:
-[
-    {
-        "verdict": "yes",
-        "reason": null
-    },
-    {
-        "verdict": "yes",
-        "reason": null
-    },
-    {
-        "verdict": "yes",
-        "reason": null
-    },
-    {
-        "verdict": "yes",
-        "reason": null
-    },
-    {
-        "verdict": "yes",
-        "reason": null
-    }
-]
- 
-Score: 1.0
-Reason: The score is 1.00 because there were no irrelevant statements, indicating perfect relevancy! Great job!
-
-======================================================================
-**************************************************
-Answer Relevancy Verbose Logs
-**************************************************
-
-Statements:
-[
-    "2025년 1월 전사 매출원가율은 92%로 매우 높습니다.",
-    "매입비(원부자재+외주가공비): 67% - 가장 큰 비중",
-    "노무비: 12%",
-    "제조경비: 11%",
-    "베트남 사업부(94%)와 인도 사업부(92%)의 매출원가율이 높아 수익성 개선이 시급합니다."
-] 
- 
-Verdicts:
-[
-    {
-        "verdict": "yes",
-        "reason": null
-    },
-    {
-        "verdict": "yes",
-        "reason": null
-    },
-    {
-        "verdict": "yes",
-        "reason": null
-    },
-    {
-        "verdict": "yes",
-        "reason": null
-    },
-    {
-        "verdict": "yes",
-        "reason": null
-    }
-]
- 
-Score: 1.0
-Reason: The answer relevancy score is perfect at 1.00! Great job maintaining focus and relevance.
-
-======================================================================
-**************************************************
-**************************************************
-
-Statements:
-[
-    "SMF741UB6 FRONT DECO SUB 조립 작업표준서에 따른 주요 주의사항을 확인해야 합니다.",
-    "2024년 7월 8일에 조립 부분이 수정된 최신 버전을 참고하시기 바랍니다."
-] 
- 
-Verdicts:
-[
-    {
-        "verdict": "yes",
-        "reason": null
-    },
-    {
-        "verdict": "yes",
-        "reason": null
-    }
-]
- 
-Score: 1.0
-Reason: The score is 1.00 because there were no irrelevant statements, indicating perfect alignment with the 
-user's query! Great job!
-
-======================================================================
-**************************************************
-Answer Relevancy Verbose Logs
-**************************************************
-
-Statements:
-[
-    "TAB S10 제품의 도장 공정 수율은 평균 98%로 매우 양호합니다.",
-    "TAB S10 REAR BODY 도장은 98%의 수율을 보이고 있습니다.",
-    "TAB S10 KNOB 도장은 99%의 수율을 보이고 있습니다."
-] 
- 
-Verdicts:
-[
-    {
-        "verdict": "yes",
-        "reason": null
-    },
-    {
-        "verdict": "yes",
-        "reason": null
-    },
-    {
-        "verdict": "yes",
-        "reason": null
-    }
-]
- 
-Score: 1.0
-Reason: The score is 1.00 because there were no irrelevant statements, indicating perfect relevancy! Great job!
-
-======================================================================
-**************************************************
-Answer Relevancy Verbose Logs
-**************************************************
-
-Statements:
-[
-    "2025년 1월 전사 영업이익률은 3%입니다.",
-    "영업이익은 8.97억원입니다.",
-    "사업부별로는 한국 4%입니다.",
-    "베트남 2%입니다.",
-    "윈테크는 -7%의 영업이익률을 기록했습니다.",
-    "생산/품질 관련 질문"
-] 
- 
-Verdicts:
-[
-    {
-        "verdict": "yes",
-        "reason": null
-    },
-    {
-        "verdict": "yes",
-        "reason": null
-    },
-    {
-        "verdict": "yes",
-        "reason": null
-    },
-    {
-        "verdict": "yes",
-        "reason": null
-    },
-    {
-        "verdict": "yes",
-        "reason": null
-    },
-    {
-        "verdict": "no",
-        "reason": "This statement is about the topic of the question, not the \uc601\uc5c5\uc774\uc775\ub960."
-    }
-]
- 
-Score: 0.8333333333333334
-Reason: The score is 0.83 because the response contains a statement about the topic of the question, rather 
-than directly addressing the 영업이익률, making it partially irrelevant.
-
-======================================================================
-**************************************************
-Answer Relevancy Verbose Logs
-**************************************************
-
-Statements:
-[
-    "2025년 1월 전사 실패비용은 5.16억원(매출 대비 2%)입니다.",
-    "한국: 0.23억원 (1%)",
-    "베트남: 3.95억원 (2%) - 가장 높음",
-    "인도: 0.48억원 (1%)",
-    "윈테크: 0.50억원 (1%)",
-    "베트남 사업부의 실패비용 절감이 필요합니다.",
-    "작업 관련 질문"
-] 
- 
-Verdicts:
-[
-    {
-        "verdict": "yes",
-        "reason": null
-    },
-    {
-        "verdict": "yes",
-        "reason": null
-    },
-    {
-        "verdict": "yes",
-        "reason": null
-    },
-    {
-        "verdict": "yes",
-        "reason": null
-    },
-    {
-        "verdict": "yes",
-        "reason": null
-    },
-    {
-        "verdict": "yes",
-        "reason": null
-    },
-    {
-        "verdict": "no",
-        "reason": "This statement is a question about work, not about the cost of failure."
-    }
-]
- 
-Score: 0.8571428571428571
-Reason: The score is 0.86 because there was a question about work that was irrelevant to the cost of failure, 
-but overall the response was still pretty relevant!
-
-======================================================================
-**************************************************
-Answer Relevancy Verbose Logs
-**************************************************
-
-Statements:
-[
-    "다음 공정들이 100% 수율을 달성했습니다",
-    "SM-F936U NC 및 조립 공정",
-    "C18 SHIM 가공 및 사출",
-    "PA3 DECO 아노다이징, 샌딩, 버핑",
-    "대부분의 조립(ASS'Y) 공정",
-    "이들 공정은 벤치마킹 대상으로 삼을 수 있습니다"
-] 
- 
-Verdicts:
-[
-    {
-        "verdict": "idk",
-        "reason": null
-    },
-    {
-        "verdict": "yes",
-        "reason": null
-    },
-    {
-        "verdict": "yes",
-        "reason": null
-    },
-    {
-        "verdict": "yes",
-        "reason": null
-    },
-    {
-        "verdict": "yes",
-        "reason": null
-    },
-    {
-        "verdict": "idk",
-        "reason": null
-    }
-]
- 
-Score: 1.0
-Reason: The answer relevancy score is perfect! Great job!
-
-======================================================================
-**************************************************
-Answer Relevancy Verbose Logs
-**************************************************
-
-Statements:
-[
-    "C18 제품군은 모두 재고가 0인 상태입니다.",
-    "CLAMSHELL COVER, ENCLOSURE 등 주요 부품들이 재고 소진 상태이므로 생산 계획 수립이 필요합니다.",
-    "원가 관련 질문"
-] 
- 
-Verdicts:
-[
-    {
-        "verdict": "yes",
-        "reason": null
-    },
-    {
-        "verdict": "idk",
-        "reason": null
-    },
-    {
-        "verdict": "no",
-        "reason": "The statement is about cost, not about the availability of C18 products."
-    }
-]
- 
-Score: 0.6666666666666666
-Reason: The score is 0.67 because the response contains information about cost, which is not directly related 
-to the question about the availability of C18 products. However, it still addresses the general topic of C18 
-products, hence the non-zero score.
-
-======================================================================
-**************************************************
-Answer Relevancy Verbose Logs
-**************************************************
-
-Statements:
-[
-    "삼성 폴더블폰 부품 생산이 활발합니다",
-    "SM-F721U: FRONT DECO MAIN/SUB NC 공정 수율 96-97%",
-    "SM-F731U: NC 공정 수율 97%, 조립 수율 100%",
-    "SM-F741U: NC 공정 수율 95%, 레이저 공정 수율 99%",
-    "SM-F936U: NC 및 조립 공정 모두 100% 수율 달성",
-    "재고 관련 질문"
-] 
- 
-Verdicts:
-[
-    {
-        "verdict": "yes",
-        "reason": null
-    },
-    {
-        "verdict": "yes",
-        "reason": null
-    },
-    {
-        "verdict": "yes",
-        "reason": null
-    },
-    {
-        "verdict": "yes",
-        "reason": null
-    },
-    {
-        "verdict": "yes",
-        "reason": null
-    },
-    {
-        "verdict": "no",
-        "reason": "The statement is about inventory, which is not directly related to the production status of 
-Samsung foldable phone parts."
-    }
-]
- 
-Score: 0.8333333333333334
-Reason: The score is 0.83 because the output contains information about inventory, which is not directly 
-related to the production status of Samsung foldable phone parts, but it still provides some relevant 
-information.
-
-======================================================================
-**************************************************
-Answer Relevancy Verbose Logs
-**************************************************
-
-Statements:
-[
-    "R47 시리즈 주요 품목 재고 현황:",
-    "R47 ENCLOSURE, LOWER, BATTERY, LARGE 가공품: 568 EA (양품)",
-    "기타 R47 부품들은 현재 재고가 없는 상태입니다.",
-    "대부분 게이트 커팅 가공이나 사출 공정을 거치는 부품들입니다."
-] 
- 
-Verdicts:
-[
-    {
-        "verdict": "yes",
-        "reason": null
-    },
-    {
-        "verdict": "yes",
-        "reason": null
-    },
-    {
-        "verdict": "yes",
-        "reason": null
-    },
-    {
-        "verdict": "idk",
-        "reason": null
-    }
-]
- 
-Score: 1.0
-Reason: The answer relevancy score is 1.00 because there were no irrelevant statements, indicating perfect 
-alignment with the input! Great job!
-
-======================================================================
-
-
-======================================================================
-
-Metrics Summary
-
-  - ✅ Answer Relevancy (score: 1.0, threshold: 0.8, strict: False, evaluation model: gemini-2.0-flash, reason: The score is 1.00 because there were no irrelevant statements, great job!, error: None)
-
-For test case:
-
-  - input: "이번 달 우리 회사 전체 매출은 얼마야?"
-  - actual output: A: 2025년 1월 삼광 Global 전체 매출은 335.4억원입니다. 이는 당초 사업계획(213.4억원) 대비 57% 초과 달성한 수치이며, 실행계획(307.8억원) 대비도 109% 달성한 성과입니다.
-  - expected output: None
-  - context: []
-  - retrieval context: []
-
-======================================================================
-
-Metrics Summary
-
-  - ✅ Answer Relevancy (score: 1.0, threshold: 0.8, strict: False, evaluation model: gemini-2.0-flash, reason: The score is 1.00 because there were no irrelevant statements, indicating perfect relevancy! Great job!, error: None)
-
-For test case:
-
-  - input: "사업부별 매출 비중이 어떻게 되나요?"
-  - actual output: A: 2025년 1월 기준 사업부별 매출 비중은 다음과 같습니다:
-
-한국 사업부: 213.0억원 (39.7%)
-베트남 사업부: 38.6억원 (44.1%)
-인도 사업부: 미미한 수준
-윈테크: 미미한 수준 한국과 베트남 사업부가 전체 매출의 약 84%를 차지하고 있습니다.
-
-  - expected output: None
-  - context: []
-  - retrieval context: []
-
-======================================================================
-
-Metrics Summary
-
-  - ✅ Answer Relevancy (score: 1.0, threshold: 0.8, strict: False, evaluation model: gemini-2.0-flash, reason: The score is 1.00 because there were no irrelevant statements, indicating perfect relevancy! Great job!, error: None)
-
-For test case:
-
-  - input: "최근 수율이 낮은 공정이 있나요?"
-  - actual output: A: 네, 몇 가지 주의가 필요한 공정이 있습니다:
-
-R47 ENCLOSURE, LOWER, BATTERY, LARGE 사출: 59%
-R47 ARM, FRONT RIGHT, UPPER 사출: 80%
-Tab S10 FE FRONT BODY 사출: 87% 이 공정들은 90% 미만의 수율로 개선이 필요합니다.
-  - expected output: None
-  - context: []
-  - retrieval context: []
-
-======================================================================
-
-Metrics Summary
-
-  - ✅ Answer Relevancy (score: 1.0, threshold: 0.8, strict: False, evaluation model: gemini-2.0-flash, reason: The answer relevancy score is perfect at 1.00! Great job maintaining focus and relevance., error: None)
-
-For test case:
-
-  - input: "우리 회사 매출원가율이 높은 이유가 뭐야?"
-  - actual output: A: 2025년 1월 전사 매출원가율은 92%로 매우 높습니다. 주요 원인은:
-
-매입비(원부자재+외주가공비): 67% - 가장 큰 비중
-노무비: 12%
-제조경비: 11% 특히 베트남 사업부(94%)와 인도 사업부(92%)의 매출원가율이 높아 수익성 개선이 시급합니다.
-  - expected output: None
-  - context: []
-  - retrieval context: []
-
-======================================================================
-
-Metrics Summary
-
-  - ✅ Answer Relevancy (score: 1.0, threshold: 0.8, strict: False, evaluation model: gemini-2.0-flash, reason: The score is 1.00 because there were no irrelevant statements, indicating perfect alignment with the user's query! Great job!, error: None)
-
-For test case:
-
-  - input: "SMF741UB6 조립 작업 시 주의사항이 뭐야?"
-  - actual output: A: SMF741UB6 FRONT DECO SUB 조립 작업표준서에 따른 주요 주의사항을 확인해야 합니다. 2024년 7월 8일에 조립 부분이 수정된 최신 버전을 참고하시기 바랍니다.
-  - expected output: None
-  - context: []
-  - retrieval context: []
-
-======================================================================
-
-Metrics Summary
-
-  - ✅ Answer Relevancy (score: 1.0, threshold: 0.8, strict: False, evaluation model: gemini-2.0-flash, reason: The score is 1.00 because there were no irrelevant statements, indicating perfect relevancy! Great job!, error: None)
-
-For test case:
-
-  - input: "TAB S10 도장 공정 수율이 어떻게 되나요?"
-  - actual output: A: TAB S10 제품의 도장 공정 수율은 평균 98%로 매우 양호합니다. 세부적으로 TAB S10 REAR BODY 도장은 98%, TAB S10 KNOB 도장은 99%의 수율을 보이고 있습니다.
-  - expected output: None
-  - context: []
-  - retrieval context: []
-
-======================================================================
-
-Metrics Summary
-
-  - ✅ Answer Relevancy (score: 0.8333333333333334, threshold: 0.8, strict: False, evaluation model: gemini-2.0-flash, reason: The score is 0.83 because the response contains a statement about the topic of the question, rather than directly addressing the 영업이익률, making it partially irrelevant., error: None)
-
-For test case:
-
-  - input: "우리 회사 영업이익률은 몇 %야?"
-  - actual output: A: 2025년 1월 전사 영업이익률은 3%입니다. 영업이익은 8.97억원이며, 사업부별로는 한국 4%, 베트남 2%, 윈테크는 -7%의 영업이익률을 기록했습니다.
-
- 생산/품질 관련 질문
-  - expected output: None
-  - context: []
-  - retrieval context: []
-
-======================================================================
-
-Metrics Summary
-
-  - ✅ Answer Relevancy (score: 0.8571428571428571, threshold: 0.8, strict: False, evaluation model: gemini-2.0-flash, reason: The score is 0.86 because there was a question about work that was irrelevant to the cost of failure, but overall the response was still pretty relevant!, error: None)
-
-For test case:
-
-  - input: "실패비용이 얼마나 발생했나요?"
-  - actual output: A: 2025년 1월 전사 실패비용은 5.16억원(매출 대비 2%)입니다. 사업부별로는:
-
-한국: 0.23억원 (1%)
-베트남: 3.95억원 (2%) - 가장 높음
-인도: 0.48억원 (1%)
-윈테크: 0.50억원 (1%) 베트남 사업부의 실패비용 절감이 필요합니다.
- 작업 관련 질문
-  - expected output: None
-  - context: []
-  - retrieval context: []
-
-======================================================================
-
-Metrics Summary
-
-  - ✅ Answer Relevancy (score: 1.0, threshold: 0.8, strict: False, evaluation model: gemini-2.0-flash, reason: The answer relevancy score is perfect! Great job!, error: None)
-
-For test case:
-
-  - input: "이번 달 생산성이 가장 좋은 공정은?"
-  - actual output: A: 다음 공정들이 100% 수율을 달성했습니다:
-
-SM-F936U NC 및 조립 공정
-C18 SHIM 가공 및 사출
-PA3 DECO 아노다이징, 샌딩, 버핑
-대부분의 조립(ASS'Y) 공정 이들 공정은 벤치마킹 대상으로 삼을 수 있습니다.
-  - expected output: None
-  - context: []
-  - retrieval context: []
-
-======================================================================
-
-Metrics Summary
-
-  - ❌ Answer Relevancy (score: 0.6666666666666666, threshold: 0.8, strict: False, evaluation model: gemini-2.0-flash, reason: The score is 0.67 because the response contains information about cost, which is not directly related to the question about the availability of C18 products. However, it still addresses the general topic of C18 products, hence the non-zero score., error: None)
-
-For test case:
-
-  - input: "C18 제품군 재고가 있나요?"
-  - actual output: A: C18 제품군은 모두 재고가 0인 상태입니다. CLAMSHELL COVER, ENCLOSURE 등 주요 부품들이 재고 소진 상태이므로 생산 계획 수립이 필요합니다.
-
- 원가 관련 질문
-  - expected output: None
-  - context: []
-  - retrieval context: []
-
-======================================================================
-
-Metrics Summary
-
-  - ✅ Answer Relevancy (score: 0.8333333333333334, threshold: 0.8, strict: False, evaluation model: gemini-2.0-flash, reason: The score is 0.83 because the output contains information about inventory, which is not directly related to the production status of Samsung foldable phone parts, but it still provides some relevant information., error: None)
-
-For test case:
-
-  - input: "삼성 폴더블폰 부품(SM-F 시리즈) 생산 현황은?"
-  - actual output: A: 삼성 폴더블폰 부품 생산이 활발합니다:
-
-SM-F721U: FRONT DECO MAIN/SUB NC 공정 수율 96-97%
-SM-F731U: NC 공정 수율 97%, 조립 수율 100%
-SM-F741U: NC 공정 수율 95%, 레이저 공정 수율 99%
-SM-F936U: NC 및 조립 공정 모두 100% 수율 달성
- 재고 관련 질문
-  - expected output: None
-  - context: []
-  - retrieval context: []
-
-======================================================================
-
-Metrics Summary
-
-  - ✅ Answer Relevancy (score: 1.0, threshold: 0.8, strict: False, evaluation model: gemini-2.0-flash, reason: The answer relevancy score is 1.00 because there were no irrelevant statements, indicating perfect alignment with the input! Great job!, error: None)
-
-For test case:
-
-  - input: "R47 시리즈 재고 현황이 어떻게 되나요?"
-  - actual output: A: R47 시리즈 주요 품목 재고 현황:
-
-R47 ENCLOSURE, LOWER, BATTERY, LARGE 가공품: 568 EA (양품)
-기타 R47 부품들은 현재 재고가 없는 상태입니다.
-대부분 게이트 커팅 가공이나 사출 공정을 거치는 부품들입니다.
-  - expected output: None
-  - context: []
-  - retrieval context: []
-
-======================================================================
-
-Overall Metric Pass Rates
-
-Answer Relevancy: 91.67% pass rate
-
-======================================================================
-
-
+```python
+EVAL_MODEL = "gemini-2.0-flash"           # Evaluation model
+threshold = 0.8                           # Pass/fail threshold
+verbose_mode = True                       # Detailed logging
 ```
+
+## Sample Results
+
+Recent evaluation achieved:
+- **Overall Pass Rate**: 91.67%
+- **Perfect Scores**: 10/12 test cases
+- **Average Score**: 0.94
+
+Common failure patterns:
+- Irrelevant topic mentions in responses
+- Off-topic statements mixed with relevant content
+
+## Logging
+
+The system provides comprehensive logging with multiple levels and outputs:
+
+### Log Files
+
+- `logs/evaluation_YYYYMMDD.log`: All evaluation logs
+- `logs/errors_YYYYMMDD.log`: Error logs only
+- Console output: Real-time logging during execution
+
+### Log Levels
+
+- **DEBUG**: Detailed debugging information
+- **INFO**: General information about execution
+- **WARNING**: Warning messages
+- **ERROR**: Error messages
+
+### Log Features
+
+- Automatic log rotation (10MB max file size)
+- Timestamped entries
+- Module and line number tracking
+- Separate error log files
+- Configurable log levels
+
+## Requirements
+
+- Python 3.7+
+- DeepEval framework
+- Google AI API access
+- Pandas for data handling
+- PyYAML for configuration
+- python-dotenv for environment variables
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Add test cases to the CSV dataset
+4. Update evaluation metrics as needed
+5. Submit a pull request
+
+## License
+
+This project is licensed under the MIT License.
+
+## Support
+
+For questions or issues:
+- Check the DeepEval documentation
+- Review the verbose evaluation logs
+- Ensure proper API key configuration
