@@ -1,0 +1,30 @@
+base_log_dir: logs
+default_level: INFO
+console_output: true
+format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+
+modules:
+  main:
+    level: DEBUG
+    
+  utils:
+    level: DEBUG
+
+  old_docs:
+    level: DEBUG
+  
+  prompt_template:
+    level: DEBUG
+
+  rag:
+    level: DEBUG
+
+
+  rag_utils:
+    level: DEBUG
+
+  rag_steps:
+    level: DEBUG
+    
+  
+  

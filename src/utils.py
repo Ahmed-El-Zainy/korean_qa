@@ -8,12 +8,6 @@ from dotenv import load_dotenv
 logger = logging.getLogger(__name__)
 
 def load_environment_variables(env_file: str = None) -> None:
-    """
-    Load environment variables from .env file.
-    
-    Args:
-        env_file: Path to the .env file (if None, will look in src/.env and .env)
-    """
     if env_file is None:
         # Try multiple locations
         possible_paths = [
@@ -51,7 +45,11 @@ def validate_api_keys() -> dict:
     optional_keys = {
         'OPENAI_API_KEY': 'OpenAI API key',
         'HF_TOKEN': 'Hugging Face token',
-        'nvidia_api_key': 'NVIDIA API key'
+        'nvidia_api_key': 'NVIDIA API key',
+        'GROQ_API_KEY': 'Groq API key for RAG system',
+        'SILICON_FLOW_API_KEY': 'Silicon Flow API key for embeddings and reranking',
+        'QDRANT_URL': 'Qdrant vector database URL',
+        'QDRANT_API_KEY': 'Qdrant API key'
     }
     
     validation_results = {
@@ -121,3 +119,10 @@ def format_file_size(size_bytes: int) -> str:
         i += 1
     
     return f"{size_bytes:.1f}{size_names[i]}"
+
+
+
+def load_config_yaml(config_path: str):
+    with open(config_path, 'r') as file:
+        config = yaml.safe_load(file)
+    return config

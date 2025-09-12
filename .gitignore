@@ -135,6 +135,9 @@ celerybeat.pid
 *.rdb
 *.aof
 *.pid
+.deepeval
+.gradio
+.kiro
 
 # RabbitMQ
 mnesia/

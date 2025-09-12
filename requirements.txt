@@ -1,12 +1,29 @@
-deepeval>=0.21.0
+# Core dependencies
 pandas>=1.5.0
-google-generativeai>=0.3.0
 pyyaml>=6.0
 python-dotenv>=1.0.0
-pathlib2>=2.3.0
+requests>=2.31.0
+numpy>=1.24.0
+
+# UI and visualization
 gradio>=4.0.0
 streamlit>=1.28.0
 plotly>=5.15.0
 matplotlib>=3.7.0
 seaborn>=0.12.0
-numpy>=1.24.0
+
+# RAG System Dependencies
+groq>=0.4.0
+qdrant-client>=1.7.0
+PyMuPDF>=1.23.0
+openpyxl>=3.1.0
+pytesseract>=0.3.10
+Pillow>=10.0.0
+sqlalchemy>=2.0.0
+
+# Optional: For evaluation (may cause protobuf conflicts)
+# deepeval>=0.21.0
+# google-generativeai>=0.3.0
+
+# Fix protobuf version conflicts
+protobuf>=4.21.0,<5.0.0

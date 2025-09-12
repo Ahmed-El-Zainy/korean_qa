@@ -46,6 +46,15 @@ class Config:
             if key not in self.config:
                 logger.error(f"Missing required configuration key: {key}")
                 raise ValueError(f"Missing required configuration key: {key}")
+        
+        # Validate RAG system configuration if present
+        if 'rag_system' in self.config:
+            rag_required = ['embedding_model', 'llm_model', 'vector_store']
+            for key in rag_required:
+                if key not in self.config['rag_system']:
+                    logger.error(f"Missing required RAG configuration key: rag_system.{key}")
+                    raise ValueError(f"Missing required RAG configuration key: rag_system.{key}")
+        
         logger.info("Configuration validation passed")
     
     
@@ -80,3 +89,39 @@ class Config:
     def google_api_key(self) -> str:
         """Get Google API key from environment."""
         return self.get_env_var('GOOGLE_API_KEY')
+    
+    # RAG System Properties
+    @property
+    def rag_config(self) -> Dict[str, Any]:
+        """Get RAG system configuration."""
+        return self.get('rag_system', {})
+    
+    @property
+    def groq_api_key(self) -> str:
+        """Get Groq API key from environment."""
+        return self.get_env_var('GROQ_API_KEY', required=False)
+    
+    @property
+    def silicon_flow_api_key(self) -> str:
+        """Get Silicon Flow API key from environment."""
+        return self.get_env_var('SILICON_FLOW_API_KEY', required=False)
+    
+    @property
+    def qdrant_url(self) -> str:
+        """Get Qdrant URL from environment."""
+        return self.get_env_var('QDRANT_URL', required=False)
+    
+    @property
+    def qdrant_api_key(self) -> str:
+        """Get Qdrant API key from environment."""
+        return self.get_env_var('QDRANT_API_KEY', required=False)
+    
+    @property
+    def document_processing_config(self) -> Dict[str, Any]:
+        """Get document processing configuration."""
+        return self.get('document_processing', {})
+    
+    @property
+    def storage_config(self) -> Dict[str, Any]:
+        """Get storage configuration."""
+        return self.get('storage', {})

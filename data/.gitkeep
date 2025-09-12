@@ -1,0 +1,5 @@
+# This file ensures the data directory is tracked by git
+# The data directory will contain:
+# - documents/ - uploaded files
+# - metadata.db - document metadata database
+# - vector_store/ - vector database files (if using local storage)
