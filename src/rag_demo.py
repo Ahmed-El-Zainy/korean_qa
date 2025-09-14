@@ -1,10 +1,3 @@
-"""
-Manufacturing RAG Agent Streamlit Demo
-
-This module provides a comprehensive Streamlit interface for the Manufacturing RAG Agent,
-allowing users to upload documents, ask questions, and view detailed results with citations.
-"""
-
 import streamlit as st
 import pandas as pd
 import plotly.express as px
@@ -16,17 +9,26 @@ import json
 from typing import List, Dict, Any, Optional
 import logging
 
-# Configure logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+#
+
+try:
+    from logger.custom_logger import CustomLoggerTracker
+    custom_log = CustomLoggerTracker()
+    logger = custom_log.get_logger("rag_demo")
+
+except ImportError:
+    # Fallback to standard logging if custom logger not available
+    logger = logging.getLogger("rag_demo")
+
+
 
 # Import RAG components
 try:
     from src.config import Config
-    from src.rag.ingestion_pipeline import DocumentIngestionPipeline, IngestionResult
-    from src.rag.rag_engine import RAGEngine, RAGResponse
-    from src.rag.metadata_manager import MetadataManager
-    from src.rag.document_processor import ProcessingStatus
+    from src.ingestion_pipeline import DocumentIngestionPipeline, IngestionResult
+    from src.rag_engine import RAGEngine, RAGResponse
+    from src.metadata_manager import MetadataManager
+    from src.document_processor import ProcessingStatus
 except ImportError as e:
     st.error(f"Failed to import RAG components: {e}")
     st.stop()
