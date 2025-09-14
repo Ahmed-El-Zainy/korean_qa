@@ -34,10 +34,10 @@ def test_document_processing():
     print("🧪 Testing document processing...")
     
     try:
-        from src.rag.document_processor import DocumentProcessorFactory
-        from src.rag.pdf_processor import PDFProcessor
-        from src.rag.excel_processor import ExcelProcessor
-        from src.rag.image_processor import ImageProcessor
+        from src.document_processor import DocumentProcessorFactory
+        from src.pdf_processor import PDFProcessor
+        from src.excel_processor import ExcelProcessor
+        from src.image_processor import ImageProcessor
         
         # Test processor factory
         config = {
@@ -47,7 +47,7 @@ def test_document_processing():
         }
         
         # Register processors
-        from src.rag.document_processor import DocumentType
+        from src.document_processor import DocumentType
         DocumentProcessorFactory.register_processor(DocumentType.PDF, PDFProcessor)
         DocumentProcessorFactory.register_processor(DocumentType.EXCEL, ExcelProcessor)
         DocumentProcessorFactory.register_processor(DocumentType.IMAGE, ImageProcessor)
@@ -64,7 +64,7 @@ def test_embedding_system():
     print("🧪 Testing embedding system...")
     
     try:
-        from src.rag.embedding_system import EmbeddingSystem
+        from src.embedding_system import EmbeddingSystem
         
         config = {
             'silicon_flow_api_key': os.getenv('SILICON_FLOW_API_KEY'),
@@ -101,11 +101,11 @@ def test_llm_system():
     print("🧪 Testing LLM system...")
     
     try:
-        from src.rag.groq_client import LLMSystem
+        from src.groq_client import LLMSystem
         
         config = {
             'groq_api_key': os.getenv('GROQ_API_KEY'),
-            'llm_model': 'llama-3.1-70b-versatile',
+            'llm_model': 'llama-3.1-8b-instant',
             'max_retries': 2
         }
         
@@ -136,7 +136,7 @@ def test_qdrant_connection():
     print("🧪 Testing Qdrant connection...")
     
     try:
-        from src.rag.vector_store import QdrantVectorStore
+        from src.vector_store import QdrantVectorStore
         
         config = {
             'qdrant_url': os.getenv('QDRANT_URL', 'http://localhost:6333'),
@@ -180,7 +180,7 @@ def run_simple_demo():
             'qdrant_collection': 'demo_collection',
             'embedding_model': 'BAAI/bge-large-zh-v1.5',
             'reranker_model': 'BAAI/bge-reranker-large',
-            'llm_model': 'llama-3.1-70b-versatile',
+            'llm_model': 'llama-3.1-8b-instant',
             'max_context_chunks': 3,
             'similarity_threshold': 0.7,
             'rerank_top_k': 10,
@@ -189,7 +189,7 @@ def run_simple_demo():
         }
         
         print("🔄 Initializing RAG engine...")
-        from src.rag.rag_engine import RAGEngine
+        from src.rag_engine import RAGEngine
         rag_engine = RAGEngine(config)
         
         print("✅ RAG engine initialized successfully!")

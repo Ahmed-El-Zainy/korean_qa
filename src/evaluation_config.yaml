@@ -1,0 +1,72 @@
+
+# Evaluation Settings
+evaluation:
+  threshold: 0.8
+  verbose_mode: true
+  max_retries: 3
+  timeout_seconds: 30
+
+# Dataset Settings
+dataset:
+  input_column: "input"
+  output_column: "expected_output"
+  context_column: null
+  
+# Logging Configuration
+logging:
+  level: "INFO"
+  max_file_size_mb: 10
+  backup_count: 5
+  
+# Output Settings
+output:
+  results_dir: "results"
+  logs_dir: "logs"
+  save_detailed_results: true
+  
+# Metrics Configuration
+metrics:
+  answer_relevancy:
+    enabled: true
+    threshold: 0.8
+    verbose_mode: true
+    
+  contextual_precision:
+    enabled: false
+    threshold: 0.8
+
+# RAG System Configuration
+rag_system:
+  embedding_model: "qwen3-embedding"
+  reranker_model: "qwen3-reranker"
+  llm_model: "llama-3.1-70b-versatile"  # Groq model
+  vector_store: "qdrant"
+  chunk_size: 512
+  chunk_overlap: 50
+  max_context_chunks: 5
+  similarity_threshold: 0.7
+  rerank_top_k: 20
+  final_top_k: 5
+
+# API Configuration
+apis:
+  groq_api_key: "${GROQ_API_KEY}"
+  silicon_flow_api_key: "${SILICON_FLOW_API_KEY}"
+  qdrant_url: "${QDRANT_URL}"
+  qdrant_api_key: "${QDRANT_API_KEY}"
+
+# Document Processing Configuration
+document_processing:
+  pdf_engine: "pymupdf"
+  excel_engine: "openpyxl"
+  ocr_engine: "tesseract"
+  image_processing: true
+  table_extraction: true
+  max_file_size_mb: 100
+
+# Storage Configuration
+storage:
+  qdrant_collection: "manufacturing_docs"
+  metadata_db_path: "./data/metadata.db"
+  file_storage_path: "./data/documents"
+  enable_compression: true

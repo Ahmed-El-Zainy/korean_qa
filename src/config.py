@@ -3,9 +3,17 @@ import yaml
 from pathlib import Path
 from typing import Dict, Any
 import logging
-from .utils import load_environment_variables, validate_api_keys
+from .utilites import load_environment_variables, validate_api_keys
 
-logger = logging.getLogger(__name__)
+
+# Import logger here to avoid circular imports
+try:
+    from logger.custom_logger import CustomLoggerTracker
+    custom_log = CustomLoggerTracker()
+    logger = custom_log.get_logger("config")
+except ImportError:
+    # Fallback to standard logging if custom logger not available
+    logger = logging.getLogger("config")
 
 class Config:    
     def __init__(self, config_path: str = "config.yaml"):
@@ -41,14 +49,17 @@ class Config:
 
 
     def _validate_config(self) -> None:
-        required_keys = ['gemini_model']
-        for key in required_keys:
-            if key not in self.config:
-                logger.error(f"Missing required configuration key: {key}")
-                raise ValueError(f"Missing required configuration key: {key}")
+        # For RAG system, gemini_model is optional (we use Groq instead)
+        # Check if we have either gemini_model OR rag_system configured
+        has_gemini = 'gemini_model' in self.config
+        has_rag = 'rag_system' in self.config
+        
+        if not has_gemini and not has_rag:
+            logger.error("Missing required configuration: either 'gemini_model' or 'rag_system' must be configured")
+            raise ValueError("Missing required configuration: either 'gemini_model' or 'rag_system' must be configured")
         
         # Validate RAG system configuration if present
-        if 'rag_system' in self.config:
+        if has_rag:
             rag_required = ['embedding_model', 'llm_model', 'vector_store']
             for key in rag_required:
                 if key not in self.config['rag_system']:
@@ -82,8 +93,8 @@ class Config:
     
     @property
     def gemini_model(self) -> str:
-        """Get Gemini model name."""
-        return self.get('gemini_model')
+        """Get Gemini model name (optional for RAG system)."""
+        return self.get('gemini_model', 'models/gemini-2.5-flash')
     
     @property
     def google_api_key(self) -> str:
