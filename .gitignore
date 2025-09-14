@@ -6,6 +6,11 @@ __pycache__/
 # C extensions
 *.so
 
+*.excel
+*.pdf
+*.xlsx
+
+
 # Distribution / packaging
 .Python
 build/
