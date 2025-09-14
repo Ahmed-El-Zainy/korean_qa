@@ -1,9 +1,0 @@
-# Model Configuration
-gemini_model: models/gemini-2.5-flash
-groq:
-  chat_model: openai/gpt-oss-120b
-
-silicon_flow:
-  embedding_model: Qwen/Qwen3-Embedding-8B
-  reranker: Qwen/Qwen3-Reranker-8B
-  
