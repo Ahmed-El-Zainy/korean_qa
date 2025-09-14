@@ -144,8 +144,6 @@ class DocumentProcessingError(Exception):
 
 
 class UnsupportedDocumentTypeError(DocumentProcessingError):
-    """Exception raised when document type is not supported."""
-    
     def __init__(self, file_path: str, detected_type: str):
         super().__init__(
             file_path, 
@@ -155,13 +153,6 @@ class UnsupportedDocumentTypeError(DocumentProcessingError):
 
 
 class DocumentProcessor(ABC):
-    """
-    Abstract base class for document processors.
-    
-    This class defines the interface that all document processors must implement
-    to handle different document types in the Manufacturing RAG Agent.
-    """
-    
     def __init__(self, config: Dict[str, Any]):
         """
         Initialize the document processor.

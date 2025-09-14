@@ -6,8 +6,12 @@ from PIL import Image, ImageEnhance, ImageFilter
 import io
 import numpy as np
 from dataclasses import dataclass
+import os 
+import sys 
 
-from .document_processor import (
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from src.document_processor import (
     DocumentProcessor,
     ProcessedDocument,
     DocumentType,

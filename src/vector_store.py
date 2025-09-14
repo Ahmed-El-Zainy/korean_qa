@@ -1,10 +1,3 @@
-"""
-Vector Store Module
-
-This module provides vector storage and retrieval capabilities using Qdrant.
-It handles document indexing, similarity search, and metadata management for the Manufacturing RAG Agent.
-"""
-
 import logging
 import uuid
 from typing import Dict, List, Any, Optional, Tuple
@@ -14,7 +7,12 @@ from qdrant_client import QdrantClient
 from qdrant_client.http import models
 from qdrant_client.http.models import Distance, VectorParams, PointStruct, Filter, FieldCondition, MatchValue
 
-from .document_processor import DocumentChunk, ChunkMetadata
+import os 
+import sys 
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from src.document_processor import DocumentChunk, ChunkMetadata
 
 
 try:

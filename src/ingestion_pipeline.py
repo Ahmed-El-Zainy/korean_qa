@@ -5,25 +5,30 @@ from typing import Dict, List, Any, Optional, Tuple
 from dataclasses import dataclass
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import hashlib
+import os 
+import sys 
 
-from .document_processor import (
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from src.document_processor import (
     DocumentProcessor, DocumentProcessorFactory, ProcessedDocument, 
     DocumentChunk, ProcessingStatus, DocumentType
 )
-from .embedding_system import EmbeddingSystem
-from .vector_store import QdrantVectorStore
-from .metadata_manager import MetadataManager, DocumentMetadata
-from .image_processor import ImageProcessor
+from src.embedding_system import EmbeddingSystem
+from src.vector_store import QdrantVectorStore
+from src.metadata_manager import MetadataManager, DocumentMetadata
+from src.image_processor import ImageProcessor
 
 
 try:
     from logger.custom_logger import CustomLoggerTracker
     custom_log = CustomLoggerTracker()
-    logger = custom_log.get_logger("excel_processor")
+    logger = custom_log.get_logger("ingestion_pipeline")
 
 except ImportError:
     # Fallback to standard logging if custom logger not available
-    logger = logging.getLogger("excel_processor")
+    logger = logging.getLogger("ingestion_pipeline")
 
 
 @dataclass

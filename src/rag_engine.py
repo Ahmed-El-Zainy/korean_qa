@@ -2,11 +2,16 @@ import logging
 from typing import Dict, List, Any, Optional, Tuple
 from dataclasses import dataclass, field
 import time
+import os 
+import sys 
 
-from .embedding_system import EmbeddingSystem, RerankResult
-from .vector_store import QdrantVectorStore, SearchResult
-from .groq_client import LLMSystem
-from .document_processor import DocumentChunk
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from src.embedding_system import EmbeddingSystem, RerankResult
+from src.vector_store import QdrantVectorStore, SearchResult
+from src.groq_client import LLMSystem
+from src.document_processor import DocumentChunk
 
 
 try:

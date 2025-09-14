@@ -8,7 +8,7 @@ import docx
 from clients import get_weaviate_client
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from dotenv import load_dotenv
-from configs import load_yaml_config
+from src.utilites import load_yaml_config
 load_dotenv()
 
 # Load SiliconFlow API key

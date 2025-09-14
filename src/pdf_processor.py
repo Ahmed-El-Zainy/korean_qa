@@ -4,8 +4,12 @@ from pathlib import Path
 from typing import Dict, List, Any, Optional, Tuple
 import re
 from dataclasses import dataclass
+import os 
+import sys 
 
-from .document_processor import (
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from src.document_processor import (
     DocumentProcessor,
     ProcessedDocument,
     DocumentType,

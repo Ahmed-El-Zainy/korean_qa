@@ -7,8 +7,12 @@ from openpyxl.drawing.image import Image as OpenpyxlImage
 from dataclasses import dataclass
 import io
 from PIL import Image as PILImage
+import sys 
+import os 
 
-from .document_processor import (
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from src.document_processor import (
     DocumentProcessor,
     ProcessedDocument,
     DocumentType,
@@ -651,3 +655,7 @@ class ExcelProcessor(DocumentProcessor):
 
 # Register the Excel processor
 DocumentProcessorFactory.register_processor(DocumentType.EXCEL, ExcelProcessor)
+
+
+if __name__=="__main__":
+    logger.info(f"Start excel processing...")
