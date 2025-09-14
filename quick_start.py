@@ -15,7 +15,7 @@ load_dotenv()
 
 def check_setup():
     """Check if the system is properly set up."""
-    required_keys = ['GROQ_API_KEY', 'SILICON_FLOW_API_KEY']
+    required_keys = ['GROQ_API_KEY', 'SILICONFLOW_API_KEY']
     missing_keys = []
     
     for key in required_keys:
@@ -67,7 +67,7 @@ def test_embedding_system():
         from src.embedding_system import EmbeddingSystem
         
         config = {
-            'silicon_flow_api_key': os.getenv('SILICON_FLOW_API_KEY'),
+            'siliconflow_api_key': os.getenv('SILICONFLOW_API_KEY'),
             'embedding_model': 'BAAI/bge-large-zh-v1.5',
             'reranker_model': 'BAAI/bge-reranker-large',
             'batch_size': 2,
@@ -173,7 +173,7 @@ def run_simple_demo():
     try:
         # Initialize components
         config = {
-            'silicon_flow_api_key': os.getenv('SILICON_FLOW_API_KEY'),
+            'siliconflow_api_key': os.getenv('SILICONFLOW_API_KEY'),
             'groq_api_key': os.getenv('GROQ_API_KEY'),
             'qdrant_url': os.getenv('QDRANT_URL', 'http://localhost:6333'),
             'qdrant_api_key': os.getenv('QDRANT_API_KEY'),
@@ -215,7 +215,7 @@ def main():
         print("1. Copy .env.example to .env")
         print("2. Add your API keys:")
         print("   - GROQ_API_KEY from https://console.groq.com/")
-        print("   - SILICON_FLOW_API_KEY from https://siliconflow.cn/")
+        print("   - SILICONFLOW_API_KEY from https://siliconflow.cn/")
         print("3. Set up Qdrant:")
         print("   - Local: docker run -p 6333:6333 qdrant/qdrant")
         print("   - Cloud: https://cloud.qdrant.io/")

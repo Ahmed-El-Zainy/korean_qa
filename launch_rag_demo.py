@@ -1,10 +1,3 @@
-#!/usr/bin/env python3
-"""
-Launch script for the Manufacturing RAG Agent Streamlit demo.
-
-This script launches the Streamlit demo application for the Manufacturing RAG Agent.
-"""
-
 import subprocess
 import sys
 from pathlib import Path

@@ -87,7 +87,7 @@ def setup_environment():
         print("✅ Created .env file from template")
         print("📝 Please edit .env file with your API keys:")
         print("   - GROQ_API_KEY (get from https://console.groq.com/)")
-        print("   - SILICON_FLOW_API_KEY (get from https://siliconflow.cn/)")
+        print("   - SILICONFLOW_API_KEY (get from https://siliconflow.cn/)")
         print("   - QDRANT_URL and QDRANT_API_KEY (if using Qdrant Cloud)")
         return False
     elif env_file.exists():
@@ -173,11 +173,11 @@ def test_api_keys():
         print("❌ GROQ_API_KEY not set")
     
     # Test Silicon Flow API
-    sf_key = os.getenv('SILICON_FLOW_API_KEY')
+    sf_key = os.getenv('SILICONFLOW_API_KEY')
     if sf_key:
         print("✅ Silicon Flow API key is set (cannot test without making API call)")
     else:
-        print("❌ SILICON_FLOW_API_KEY not set")
+        print("❌ SILICONFLOW_API_KEY not set")
     
     return groq_key and sf_key
 

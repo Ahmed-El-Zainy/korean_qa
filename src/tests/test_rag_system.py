@@ -23,7 +23,7 @@ class TestEmbeddingSystem:
     def setup_method(self):
         """Set up test fixtures."""
         self.config = {
-            'silicon_flow_api_key': 'test_key',
+            'siliconflow_api_key': 'test_key',
             'embedding_model': 'test-model',
             'reranker_model': 'test-reranker',
             'batch_size': 2,
@@ -148,7 +148,7 @@ class TestRAGEngine:
     def setup_method(self):
         """Set up test fixtures."""
         self.config = {
-            'silicon_flow_api_key': 'test_key',
+            'siliconflow_api_key': 'test_key',
             'groq_api_key': 'test_groq_key',
             'qdrant_url': 'http://localhost:6333',
             'qdrant_api_key': 'test_qdrant_key',
@@ -370,7 +370,7 @@ class TestIngestionPipeline:
         """Set up test fixtures."""
         self.temp_dir = tempfile.mkdtemp()
         self.config = {
-            'silicon_flow_api_key': 'test_key',
+            'siliconflow_api_key': 'test_key',
             'groq_api_key': 'test_groq_key',
             'qdrant_url': 'http://localhost:6333',
             'qdrant_api_key': 'test_qdrant_key',

@@ -65,7 +65,7 @@ class RAGDemo:
             
             # Initialize components
             config_dict = {
-                'silicon_flow_api_key': self.config.silicon_flow_api_key,
+                'siliconflow_api_key': self.config.siliconflow_api_key,
                 'groq_api_key': self.config.groq_api_key,
                 'qdrant_url': self.config.qdrant_url,
                 'qdrant_api_key': self.config.qdrant_api_key,

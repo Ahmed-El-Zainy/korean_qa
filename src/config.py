@@ -113,9 +113,9 @@ class Config:
         return self.get_env_var('GROQ_API_KEY', required=False)
     
     @property
-    def silicon_flow_api_key(self) -> str:
+    def siliconflow_api_key(self) -> str:
         """Get Silicon Flow API key from environment."""
-        return self.get_env_var('SILICON_FLOW_API_KEY', required=False)
+        return self.get_env_var('SILICONFLOW_API_KEY', required=False)
     
     @property
     def qdrant_url(self) -> str:

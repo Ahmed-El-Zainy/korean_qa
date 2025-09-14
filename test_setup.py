@@ -95,7 +95,7 @@ def test_environment():
         return False
     
     # Check critical environment variables
-    required_vars = ['GROQ_API_KEY', 'SILICON_FLOW_API_KEY']
+    required_vars = ['GROQ_API_KEY', 'SILICONFLOW_API_KEY']
     optional_vars = ['QDRANT_URL', 'QDRANT_API_KEY']
     
     missing_required = []
@@ -152,7 +152,7 @@ def test_basic_functionality():
         
         # Test configuration classes
         config_dict = {
-            'silicon_flow_api_key': 'test_key',
+            'siliconflow_api_key': 'test_key',
             'groq_api_key': 'test_key',
             'qdrant_url': 'http://localhost:6333',
             'qdrant_collection': 'test_collection',

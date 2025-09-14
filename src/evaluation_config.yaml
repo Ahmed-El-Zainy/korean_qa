@@ -51,7 +51,7 @@ rag_system:
 # API Configuration
 apis:
   groq_api_key: "${GROQ_API_KEY}"
-  silicon_flow_api_key: "${SILICON_FLOW_API_KEY}"
+  siliconflow_api_key: "${SILICONFLOW_API_KEY}"
   qdrant_url: "${QDRANT_URL}"
   qdrant_api_key: "${QDRANT_API_KEY}"
 
