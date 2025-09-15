@@ -530,3 +530,8 @@ class MetadataManager:
         except Exception as e:
             logger.error(f"Failed to cleanup orphaned citations: {e}")
             return 0
+
+
+
+if __name__=="__main__":
+    logger.info(f"metadata init ..")

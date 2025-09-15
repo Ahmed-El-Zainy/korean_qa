@@ -398,3 +398,9 @@ class DocumentProcessorFactory:
     def get_supported_types(cls) -> List[DocumentType]:
         """Get list of supported document types."""
         return list(cls._processors.keys())
+
+
+
+
+if __name__=="__main__":
+    logger.info(f"Docs processor init ..")

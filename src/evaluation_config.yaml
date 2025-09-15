@@ -39,7 +39,7 @@ metrics:
 rag_system:
   embedding_model: "qwen3-embedding"
   reranker_model: "qwen3-reranker"
-  llm_model: "llama-3.1-70b-versatile"  # Groq model
+  llm_model: "openai/gpt-oss-120b"  # Groq model
   vector_store: "qdrant"
   chunk_size: 512
   chunk_overlap: 50

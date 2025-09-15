@@ -480,3 +480,9 @@ class PDFProcessor(DocumentProcessor):
 
 # Register the PDF processor
 DocumentProcessorFactory.register_processor(DocumentType.PDF, PDFProcessor)
+
+
+
+
+if __name__=="__main__":
+    logger.info(f"PDF processor init ..")

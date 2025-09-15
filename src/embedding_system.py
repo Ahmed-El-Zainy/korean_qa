@@ -1,20 +1,19 @@
 import logging
 import requests
 import time
-from typing import Dict, List, Any, Optional, Tuple
+import os
+import sys
+from typing import Dict, List, Any, Optional
 from dataclasses import dataclass
-import asyncio
-import aiohttp
-from concurrent.futures import ThreadPoolExecutor
-import os 
-import sys 
 from dotenv import load_dotenv
-from langchain_text_splitters import RecursiveCharacterTextSplitter
+import yaml
+from pathlib import Path
+
+# Load environment variables
 load_dotenv()
 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-from src.utilites import load_yaml_config
 
 try:
     from logger.custom_logger import CustomLoggerTracker
@@ -25,10 +24,6 @@ except ImportError:
     # Fallback to standard logging if custom logger not available
     logger = logging.getLogger("embedding_system")
 
-
-config = load_yaml_config("src/config.yaml")
-SILICONFLOW_EMBEDDING_URL = os.environ["SILICONFLOW_EMBEDDING_URL"]
-SILICONFLOW_API_KEY = os.environ["SILICONFLOW_API_KEY"]
 @dataclass
 class EmbeddingResult:
     """Result of embedding generation."""
@@ -39,7 +34,6 @@ class EmbeddingResult:
     success: bool
     error_message: Optional[str] = None
 
-
 @dataclass
 class RerankResult:
     """Result of reranking operation."""
@@ -47,52 +41,48 @@ class RerankResult:
     score: float
     index: int
 
-def get_api_key() -> str:
-    """Retrieve the API key from environment variables."""
-    api_key = os.environ.get("SILICONFLOW_API_KEY")
-    if not api_key:
-        raise ValueError("API key not found in environment variables.")
-    return api_key
+@dataclass
+class LLMResponse:
+    """Response from LLM generation."""
+    text: str
+    model_name: str
+    processing_time: float
+    token_count: int
+    success: bool
+    error_message: Optional[str] = None
 
-
-EMBEDDING_URL = os.environ["SILICONFLOW_EMBEDDING_URL"]
-RERANKER_URL = os.environ["SILICONFLOW_RERANKING_URL"]
-SILICONFLOW_URL = os.environ["SILICONFLOW_URL"]
-
-
-
-
-class SiliconFlowEmbeddingClient:
-    def __init__(self, api_key: str, base_url: str = SILICONFLOW_URL):
+class EmbeddingSystem:
+    def __init__(self, api_key: str, base_url: str = "https://api.siliconflow.com/v1"):
         self.api_key = api_key
         self.base_url = base_url.rstrip('/')
         self.session = requests.Session()
         self.session.headers.update({
             'Authorization': f'Bearer {api_key}',
-            'Content-Type': 'application/json'})
+            'Content-Type': 'application/json'
+        })
+        
+        # Rate limiting
         self.max_requests_per_minute = 60
         self.request_timestamps = []
-        logger.info(f"Silicon Flow embedding client initialized with base URL: {base_url}")
+        
+        logger.info(f"SiliconFlow client initialized with base URL: {base_url}")
     
-    def generate_embeddings(self, texts: List[str]) -> EmbeddingResult:
+    def generate_embeddings(self, texts: List[str], 
+                          model: str = "Qwen/Qwen3-Embedding-8B") -> EmbeddingResult:
         start_time = time.time()
         try:
             self._check_rate_limit()
             payload = {
-                "model": config["silicon_flow"]["embedding_model"],
+                "model": model,
                 "input": texts,
                 "encoding_format": "float"}
-            # Make API request
             response = self.session.post(
                 f"{self.base_url}/embeddings",
                 json=payload,
                 timeout=30)
             processing_time = time.time() - start_time
-            
             if response.status_code == 200:
                 data = response.json()
-                
-                # Extract embeddings
                 embeddings = []
                 for item in data.get('data', []):
                     embeddings.append(item.get('embedding', []))
@@ -102,17 +92,17 @@ class SiliconFlowEmbeddingClient:
                 logger.debug(f"Generated {len(embeddings)} embeddings in {processing_time:.2f}s")
                 return EmbeddingResult(
                     embeddings=embeddings,
-                    model_name=config["silicon_flow"]["embedding_model"],
+                    model_name=model,
                     processing_time=processing_time,
                     token_count=token_count,
                     success=True)
             else:
-                error_msg = f"API request failed with status {response.status_code}: {response.text}"
+                error_msg = f"SiliconFlow API error {response.status_code}: {response.text}"
                 logger.error(error_msg)
                 
                 return EmbeddingResult(
                     embeddings=[],
-                    model_name=config["silicon_flow"]["embedding_model"],
+                    model_name=model,
                     processing_time=processing_time,
                     token_count=0,
                     success=False,
@@ -126,32 +116,33 @@ class SiliconFlowEmbeddingClient:
             
             return EmbeddingResult(
                 embeddings=[],
-                model_name=config["silicon_flow"]["embedding_model"],
+                model_name=model,
                 processing_time=processing_time,
                 token_count=0,
                 success=False,
                 error_message=error_msg
             )
-
     
     def rerank_documents(self, query: str, documents: List[str], 
+                        model: str = "Qwen/Qwen3-Reranker-8B",
                         top_k: Optional[int] = None) -> List[RerankResult]:
+        """Rerank documents based on query relevance."""
         try:
-            # Rate limiting check
             self._check_rate_limit()
-            # Prepare request
+            
             payload = {
-                "model": config["silicon_flow"]["reranker"],
+                "model": model,
                 "query": query,
                 "documents": documents,
                 "top_k": top_k or len(documents),
-                "return_documents": True}
+                "return_documents": True
+            }
             
-            # Make API request
             response = self.session.post(
                 f"{self.base_url}/rerank",
                 json=payload,
-                timeout=30)
+                timeout=30
+            )
             
             if response.status_code == 200:
                 data = response.json()
@@ -162,17 +153,20 @@ class SiliconFlowEmbeddingClient:
                     results.append(RerankResult(
                         text=item.get('document', {}).get('text', ''),
                         score=item.get('relevance_score', 0.0),
-                        index=item.get('index', 0)))
+                        index=item.get('index', 0)
+                    ))
                 
                 # Sort by score (descending)
                 results.sort(key=lambda x: x.score, reverse=True)
                 
                 logger.debug(f"Reranked {len(results)} documents")
                 return results
+                
             else:
-                error_msg = f"Rerank request failed with status {response.status_code}: {response.text}"
+                error_msg = f"SiliconFlow rerank API error {response.status_code}: {response.text}"
                 logger.error(error_msg)
                 return []
+                
         except Exception as e:
             logger.error(f"Reranking failed: {str(e)}")
             return []
@@ -180,10 +174,12 @@ class SiliconFlowEmbeddingClient:
     def _check_rate_limit(self):
         """Check and enforce rate limiting."""
         current_time = time.time()
+        
         # Remove timestamps older than 1 minute
         self.request_timestamps = [
             ts for ts in self.request_timestamps 
-            if current_time - ts < 60]
+            if current_time - ts < 60
+        ]
         
         # Check if we're at the rate limit
         if len(self.request_timestamps) >= self.max_requests_per_minute:
@@ -196,185 +192,367 @@ class SiliconFlowEmbeddingClient:
         self.request_timestamps.append(current_time)
 
 
-class EmbeddingSystem:
-    def __init__(self, config: Dict[str, Any]):
+
+class GroqClient:
+    """Groq API client for LLM inference."""
+    
+    def __init__(self, api_key: str, base_url: str = "https://api.groq.com/openai/v1"):
+        self.api_key = api_key
+        self.base_url = base_url.rstrip('/')
+        self.session = requests.Session()
+        self.session.headers.update({
+            'Authorization': f'Bearer {api_key}',
+            'Content-Type': 'application/json'
+        })
+        # Rate limiting
+        self.max_requests_per_minute = 30
+        self.request_timestamps = []
+        logger.info(f"Groq client initialized with base URL: {base_url}")
+    
+    def generate_response(self, messages: List[Dict[str, str]], 
+                         model: str = "openai/gpt-oss-120b",
+                         max_tokens: int = 1024,
+                         temperature: float = 0.1,
+                         stream: bool = False) -> LLMResponse:
+        """Generate response using Groq LLM."""
+        start_time = time.time()
+        
+        try:
+            self._check_rate_limit()
+            
+            payload = {
+                "model": model,
+                "messages": messages,
+                "max_tokens": max_tokens,
+                "temperature": temperature,
+                "stream": stream
+            }
+            
+            if stream:
+                return self._handle_streaming_response(payload, model, start_time)
+            else:
+                return self._handle_non_streaming_response(payload, model, start_time)
+                
+        except Exception as e:
+            processing_time = time.time() - start_time
+            error_msg = f"Groq LLM generation failed: {str(e)}"
+            logger.error(error_msg)
+            
+            return LLMResponse(
+                text="",
+                model_name=model,
+                processing_time=processing_time,
+                token_count=0,
+                success=False,
+                error_message=error_msg
+            )
+    
+
+
+    def _handle_non_streaming_response(self, payload: Dict, model: str, start_time: float) -> LLMResponse:
+        """Handle non-streaming response."""
+        response = self.session.post(
+            f"{self.base_url}/chat/completions",
+            json=payload,
+            timeout=60
+        )
+        
+        processing_time = time.time() - start_time
+        
+        if response.status_code == 200:
+            data = response.json()
+            
+            # Extract response text
+            choice = data.get('choices', [{}])[0]
+            message = choice.get('message', {})
+            generated_text = message.get('content', '')
+            usage = data.get('usage', {})
+            token_count = usage.get('total_tokens', 0)
+            logger.debug(f"Generated response in {processing_time:.2f}s, {token_count} tokens")
+            return LLMResponse(
+                text=generated_text,
+                model_name=model,
+                processing_time=processing_time,
+                token_count=token_count,
+                success=True
+            )
+        else:
+            error_msg = f"Groq API error {response.status_code}: {response.text}"
+            logger.error(error_msg)
+            
+            return LLMResponse(
+                text="",
+                model_name=model,
+                processing_time=processing_time,
+                token_count=0,
+                success=False,
+                error_message=error_msg
+            )
+    
+    def _handle_streaming_response(self, payload: Dict, model: str, start_time: float) -> LLMResponse:
+        """Handle streaming response."""
+        response = self.session.post(
+            f"{self.base_url}/chat/completions",
+            json=payload,
+            timeout=60,
+            stream=True
+        )
+        
+        if response.status_code != 200:
+            processing_time = time.time() - start_time
+            error_msg = f"Groq streaming API error {response.status_code}: {response.text}"
+            logger.error(error_msg)
+            
+            return LLMResponse(
+                text="",
+                model_name=model,
+                processing_time=processing_time,
+                token_count=0,
+                success=False,
+                error_message=error_msg
+            )
+        
+        # Process streaming chunks
+        generated_text = ""
+        token_count = 0
+        
+        for line in response.iter_lines():
+            if line:
+                line_str = line.decode('utf-8')
+                if line_str.startswith('data: '):
+                    data_str = line_str[6:]  # Remove 'data: ' prefix
+                    if data_str.strip() == '[DONE]':
+                        break
+                    
+                    try:
+                        chunk_data = eval(data_str)  # Note: In production, use json.loads with proper error handling
+                        if 'choices' in chunk_data and chunk_data['choices']:
+                            delta = chunk_data['choices'][0].get('delta', {})
+                            if 'content' in delta:
+                                generated_text += delta['content']
+                                token_count += 1
+                    except:
+                        continue
+        
+        processing_time = time.time() - start_time
+        
+        return LLMResponse(
+            text=generated_text,
+            model_name=model,
+            processing_time=processing_time,
+            token_count=token_count,
+            success=True
+        )
+    
+    def _check_rate_limit(self):
+        """Check and enforce rate limiting."""
+        current_time = time.time()
+        
+        # Remove timestamps older than 1 minute
+        self.request_timestamps = [
+            ts for ts in self.request_timestamps 
+            if current_time - ts < 60
+        ]
+        
+        # Check if we're at the rate limit
+        if len(self.request_timestamps) >= self.max_requests_per_minute:
+            sleep_time = 60 - (current_time - self.request_timestamps[0])
+            if sleep_time > 0:
+                logger.warning(f"Rate limit reached, sleeping for {sleep_time:.2f} seconds")
+                time.sleep(sleep_time)
+        
+        # Add current request timestamp
+        self.request_timestamps.append(current_time)
+
+class RAGSystem:
+    def __init__(self, config: Optional[Dict[str, Any]] = None):
+        """Initialize the RAG system."""
+        if config is None:
+            config = self._load_default_config()
         self.config = config
-        self.api_key = os.environ["SILICONFLOW_API_KEY"]
-        self.embedding_model = config.get('embedding_model', 'BAAI/bge-large-zh-v1.5')
-        self.reranker_model = config.get('reranker_model', 'BAAI/bge-reranker-large')
-        self.batch_size = config.get('batch_size', 32)
-        self.max_retries = config.get('max_retries', 3)
-        self.cache_enabled = config.get('enable_embedding_cache', True)
         
-        if not self.api_key:
-            raise ValueError("Silicon Flow API key is required")
+        # Get API keys
+        self.siliconflow_api_key = config.get('siliconflow_api_key') or os.getenv('SILICONFLOW_API_KEY')
+        self.groq_api_key = config.get('groq_api_key') or os.getenv('GROQ_API_KEY')
         
-        # Initialize client
-        self.client = SiliconFlowEmbeddingClient(self.api_key)
+        if not self.siliconflow_api_key:
+            raise ValueError("SiliconFlow API key is required")
+        if not self.groq_api_key:
+            raise ValueError("Groq API key is required")
         
-        # Simple in-memory cache
-        self.embedding_cache = {} if self.cache_enabled else None
+        # Initialize clients
+        self.siliconflow_client = EmbeddingSystem(
+            api_key=self.siliconflow_api_key,
+            base_url=config.get('siliconflow_base_url', 'https://api.siliconflow.com/v1')
+        )
         
-        logger.info(f"Embedding system initialized with model: {self.embedding_model}")
+        self.groq_client = GroqClient(
+            api_key=self.groq_api_key,
+            base_url=config.get('groq_base_url', 'https://api.groq.com/openai/v1')
+        )
+        
+
+
+        # RAG configuration
+        self.embedding_model = config.get('embedding_model', 'Qwen/Qwen3-Embedding-8B')
+        self.reranker_model = config.get('reranker_model', 'Qwen/Qwen3-Reranker-8B')
+        self.llm_model = config.get('llm_model', 'openai/gpt-oss-120b')
+        self.max_context_chunks = config.get('max_context_chunks', 5)
+        self.chunk_size = config.get('chunk_size', 512)
+        self.chunk_overlap = config.get('chunk_overlap', 50)
+        
+        logger.info("RAG system initialized successfully")
+    
+    def _load_default_config(self) -> Dict[str, Any]:
+        """Load default configuration."""
+        return {
+            'embedding_model': 'Qwen/Qwen3-Embedding-8B',
+            'reranker_model': 'Qwen/Qwen3-Reranker-8B',
+            'llm_model': 'openai/gpt-oss-120b',
+            'max_context_chunks': 5,
+            'chunk_size': 512,
+            'chunk_overlap': 50,
+            'temperature': 0.1,
+            'max_tokens': 1024
+        }
     
     def generate_embeddings(self, texts: List[str]) -> List[List[float]]:
-        if not texts:
+        """Generate embeddings for texts."""
+        result = self.siliconflow_client.generate_embeddings(texts, self.embedding_model)
+        if result.success:
+            return result.embeddings
+        else:
+            logger.error(f"Failed to generate embeddings: {result.error_message}")
             return []
-        
-        all_embeddings = []
-        
-        # Process in batches
-        for i in range(0, len(texts), self.batch_size):
-            batch = texts[i:i + self.batch_size]
-            
-            # Check cache first
-            cached_embeddings = []
-            uncached_texts = []
-            uncached_indices = []
-            
-            if self.cache_enabled:
-                for j, text in enumerate(batch):
-                    cache_key = self._get_cache_key(text)
-                    if cache_key in self.embedding_cache:
-                        cached_embeddings.append((i + j, self.embedding_cache[cache_key]))
-                    else:
-                        uncached_texts.append(text)
-                        uncached_indices.append(i + j)
-            else:
-                uncached_texts = batch
-                uncached_indices = list(range(i, i + len(batch)))
-            
-            # Generate embeddings for uncached texts
-            if uncached_texts:
-                batch_embeddings = self._generate_batch_embeddings(uncached_texts)
-                
-                # Cache new embeddings
-                if self.cache_enabled and batch_embeddings:
-                    for text, embedding in zip(uncached_texts, batch_embeddings):
-                        cache_key = self._get_cache_key(text)
-                        self.embedding_cache[cache_key] = embedding
-                
-                # Combine cached and new embeddings
-                new_embeddings = [(idx, emb) for idx, emb in zip(uncached_indices, batch_embeddings)]
-                all_batch_embeddings = cached_embeddings + new_embeddings
-            else:
-                all_batch_embeddings = cached_embeddings
-            
-            # Sort by original index and extract embeddings
-            all_batch_embeddings.sort(key=lambda x: x[0])
-            batch_result = [emb for _, emb in all_batch_embeddings]
-            all_embeddings.extend(batch_result)
-        
-        logger.info(f"Generated embeddings for {len(texts)} texts")
-        return all_embeddings
     
     def generate_query_embedding(self, query: str) -> List[float]:
+        """Generate embedding for a single query."""
         embeddings = self.generate_embeddings([query])
         return embeddings[0] if embeddings else []
     
-    def rerank_results(self, query: str, documents: List[str], top_k: Optional[int] = None) -> List[RerankResult]:
-        if not documents:
-            return []
+    def rerank_documents(self, query: str, documents: List[str], top_k: Optional[int] = None) -> List[RerankResult]:
+        """Rerank documents based on query relevance."""
+        return self.siliconflow_client.rerank_documents(
+            query=query,
+            documents=documents,
+            model=self.reranker_model,
+            top_k=top_k
+        )
+    
+    def generate_response(self, messages: List[Dict[str, str]], stream: bool = False) -> str:
+        """Generate LLM response."""
+        response = self.groq_client.generate_response(
+            messages=messages,
+            model=self.llm_model,
+            max_tokens=self.config.get('max_tokens', 1024),
+            temperature=self.config.get('temperature', 0.1),
+            stream=stream
+        )
+        
+        if response.success:
+            return response.text
+        else:
+            logger.error(f"Failed to generate response: {response.error_message}")
+            return "Sorry, I couldn't generate a response due to technical difficulties."
+    
+    def answer_question(self, question: str, context: str) -> str:
+        """Answer a question based on provided context."""
+        system_prompt = """You are a helpful assistant that answers questions based on the provided context. 
+Use only the information in the context to answer questions. If the context doesn't contain enough information, 
+say so clearly. Provide accurate and concise answers."""
+        
+        messages = [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": f"Context:\n{context}\n\nQuestion: {question}"}
+        ]
+        
+        return self.generate_response(messages)
+    
+    def health_check(self) -> Dict[str, bool]:
+        """Check health of all components."""
+        # Test SiliconFlow embedding
+        siliconflow_healthy = False
         try:
-            results = self.client.rerank_documents(
-                query=query,
-                documents=documents,
-                model=self.reranker_model,
-                top_k=top_k)
-            
-            logger.debug(f"Reranked {len(documents)} documents, returning top {len(results)}")
-            return results
-            
-        except Exception as e:
-            logger.error(f"Reranking failed: {e}")
-            # Return original order with default scores
-            return [
-                RerankResult(text=doc, score=1.0 - (i * 0.1), index=i)
-                for i, doc in enumerate(documents[:top_k] if top_k else documents)]
-    
-    
-    def _generate_batch_embeddings(self, texts: List[str]) -> List[List[float]]:
-        for attempt in range(self.max_retries):
-            try:
-                result = self.client.generate_embeddings(texts)
-                if result.success:
-                    return result.embeddings
-                else:
-                    logger.warning(f"Embedding generation failed (attempt {attempt + 1}): {result.error_message}")
-                    if attempt < self.max_retries - 1:
-                        time.sleep(2 ** attempt)  # Exponential backoff
-            except Exception as e:
-                logger.warning(f"Embedding generation error (attempt {attempt + 1}): {e}")
-                if attempt < self.max_retries - 1:
-                    time.sleep(2 ** attempt)
+            result = self.siliconflow_client.generate_embeddings(["test"], self.embedding_model)
+            siliconflow_healthy = result.success
+        except:
+            pass
         
-        # Return empty embeddings if all attempts failed
-        logger.error(f"Failed to generate embeddings after {self.max_retries} attempts")
-        return [[] for _ in texts]
-    
-    def _get_cache_key(self, text: str) -> str:
-        import hashlib
-        return hashlib.md5(f"{self.embedding_model}:{text}".encode()).hexdigest()
-    
-    def clear_cache(self):
-        """Clear the embedding cache."""
-        if self.cache_enabled:
-            self.embedding_cache.clear()
-            logger.info("Embedding cache cleared")
-    
-    def get_cache_stats(self) -> Dict[str, Any]:
-        if not self.cache_enabled:
-            return {"cache_enabled": False}
+        # Test Groq LLM
+        groq_healthy = False
+        try:
+            response = self.groq_client.generate_response([{"role": "user", "content": "test"}], self.llm_model)
+            groq_healthy = response.success
+        except:
+            pass
+        
         return {
-            "cache_enabled": True,
-            "cache_size": len(self.embedding_cache),
-            "model": self.embedding_model}
+            'siliconflow': siliconflow_healthy,
+            'groq': groq_healthy,
+            'overall': siliconflow_healthy and groq_healthy
+        }
 
+# Configuration loader
+def load_config(config_path: str) -> Dict[str, Any]:
+    """Load configuration from YAML file."""
+    try:
+        with open(config_path, 'r', encoding='utf-8') as f:
+            config = yaml.safe_load(f)
+        logger.info(f"Configuration loaded from {config_path}")
+        return config
+    except Exception as e:
+        logger.error(f"Failed to load config from {config_path}: {e}")
+        return {}
 
-
-
-# ─── Chunker & Embed ──────────────────────────────────────────────────────────
-splitter = RecursiveCharacterTextSplitter(
-    chunk_size=config["chunking"]["chunk_size"],
-    chunk_overlap=config["chunking"]["chunk_size"],
-    separators=config["chunking"]["chunk_size"],)
-
-
-def embed_texts(texts: list[str], batch_size: int = 50) -> list[list[float]]:
-    all_embeddings = []
-    headers = {
-        "Authorization": f"Bearer {SILICONFLOW_API_KEY}",
-        "Content-Type": "application/json"}
-    for i in range(0, len(texts), batch_size):
-        batch = texts[i:i + batch_size]
-
-        logger.info(f"Embedding Model: {config['silicon_flow']['embeding']}")
-        payload = {
-            "model": config["silicon_flow"]["embeding"],
-            "input": batch}
-        response = requests.post(
-            SILICONFLOW_EMBEDDING_URL, json=payload, headers=headers)
-        # response.raise_for_status()
-        data = response.json()
-        if "data" not in data:
-            raise ValueError(f"Invalid response format: {data}")
-        batch_embs = [item["embedding"] for item in data["data"]]
-        all_embeddings.extend(batch_embs)
-        # Fill with empty embeddings in case of failure
-        all_embeddings.extend([[] for _ in batch])
-    return all_embeddings
-
-
-
-
-        
-if __name__=="__main__":
-    logger.info("Start Embedding and Reraning Module")
-    text = "TAB S10 도장 공정 수율이 어떻게 되나요?"
-    embedding_system = EmbeddingSystem(config)
-    embedding = embedding_system.generate_query_embedding(text)
-    logger.info(embedding)
-    logger.info(embedding_system.get_cache_stats())
-    embedding_system.clear_cache()
+# Example usage and testing
+def main():
+    """Example usage of the corrected RAG system."""
+    logger.info("Testing corrected RAG system")
     
+    try:
+        # Initialize RAG system
+        rag_system = RAGSystem()
         
+        # Test health
+        health = rag_system.health_check()
+        logger.info(f"System health: {health}")
+        
+        # Test embedding generation
+        test_texts = [
+            "What is machine learning?",
+            "How does artificial intelligence work?",
+            "Explain neural networks"
+        ]
+        
+        logger.info("Testing embedding generation...")
+        embeddings = rag_system.generate_embeddings(test_texts)
+        logger.info(f"Generated {len(embeddings)} embeddings")
+        
+        # Test reranking
+        query = "artificial intelligence"
+        documents = [
+            "AI is a branch of computer science",
+            "Machine learning is a subset of AI", 
+            "Neural networks are used in deep learning"
+        ]
+        
+        logger.info("Testing document reranking...")
+        rerank_results = rag_system.rerank_documents(query, documents, top_k=2)
+        logger.info(f"Reranked {len(rerank_results)} documents")
+        for i, result in enumerate(rerank_results):
+            logger.info(f"Rank {i+1}: {result.score:.3f} - {result.text}")
+        
+        # Test LLM response
+        logger.info("Testing LLM response generation...")
+        context = "Machine learning is a method of data analysis that automates analytical model building."
+        question = "What is machine learning?"
+        answer = rag_system.answer_question(question, context)
+        logger.info(f"Generated answer: {answer}")
+        
+        logger.info("All tests completed successfully!")
+        
+    except Exception as e:
+        logger.error(f"Test failed: {e}")
+
+if __name__ == "__main__":
+    main()

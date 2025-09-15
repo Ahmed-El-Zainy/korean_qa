@@ -531,3 +531,8 @@ class ImageProcessor(DocumentProcessor):
 
 # Register the Image processor
 DocumentProcessorFactory.register_processor(DocumentType.IMAGE, ImageProcessor)
+
+
+
+if __name__=="__main__":
+    logger.info(f"Image processor init ..")

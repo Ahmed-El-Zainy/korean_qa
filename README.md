@@ -135,7 +135,7 @@ Edit `src/config.yaml` to customize the system:
 rag_system:
   embedding_model: "qwen3-embedding"
   reranker_model: "qwen3-reranker"
-  llm_model: "llama-3.1-70b-versatile"
+  llm_model: "openai/gpt-oss-120b"
   chunk_size: 512
   chunk_overlap: 50
   max_context_chunks: 5

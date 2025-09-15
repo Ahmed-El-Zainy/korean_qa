@@ -496,3 +496,8 @@ class DocumentIngestionPipeline:
             "metadata_manager": True,  # SQLite is always available if file system works
             "embedding_system": True   # Will be checked during actual usage
         }
+
+
+
+if __name__=="__main__":
+    logger.info(f"Ingestion Pipe init ..")

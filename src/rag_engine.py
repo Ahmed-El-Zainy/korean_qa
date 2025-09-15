@@ -6,7 +6,7 @@ import os
 import sys 
 
 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from src.embedding_system import EmbeddingSystem, RerankResult
 from src.vector_store import QdrantVectorStore, SearchResult

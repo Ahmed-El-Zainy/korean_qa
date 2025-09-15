@@ -150,7 +150,7 @@ class GroqClient:
             )
     
     def answer_question(self, question: str, context: str, 
-                       model: str = "llama-3.1-70b-versatile") -> LLMResponse:
+                       model: str = "openai/gpt-oss-120b") -> LLMResponse:
         """
         Answer a question based on provided context.
         
@@ -191,17 +191,7 @@ Please provide a detailed answer based on the context above. Include specific ci
         return self.generate_response(messages, model, max_tokens=1024, temperature=0.1)
     
     def summarize_document(self, content: str, 
-                          model: str = "llama-3.1-70b-versatile") -> LLMResponse:
-        """
-        Generate a summary of document content.
-        
-        Args:
-            content: Document content to summarize
-            model: Model name to use
-            
-        Returns:
-            LLMResponse with the summary
-        """
+                          model: str = "openai/gpt-oss-120b") -> LLMResponse:
         system_prompt = """You are an expert at summarizing manufacturing documents. Create concise, informative summaries that capture the key information, data points, and insights from manufacturing documentation."""
         
         user_prompt = f"""Please provide a comprehensive summary of the following manufacturing document content:
@@ -225,7 +215,7 @@ Keep the summary concise but comprehensive."""
         return self.generate_response(messages, model, max_tokens=512, temperature=0.1)
     
     def extract_key_information(self, content: str, 
-                               model: str = "llama-3.1-70b-versatile") -> LLMResponse:
+                               model: str = "openai/gpt-oss-120b") -> LLMResponse:
         """
         Extract key information from document content.
         
@@ -332,7 +322,7 @@ class LLMSystem:
         """
         self.config = config
         self.api_key = config.get('groq_api_key')
-        self.default_model = config.get('llm_model', 'llama-3.1-70b-versatile')
+        self.default_model = config.get('llm_model', 'openai/gpt-oss-120b')
         self.max_retries = config.get('max_retries', 3)
         
         if not self.api_key:
@@ -406,3 +396,8 @@ class LLMSystem:
                     time.sleep(2 ** attempt)
         
         return "Unable to generate summary at this time."
+
+
+if __name__=="__main__":
+    logger.info(f"Groq client init ..")
+    

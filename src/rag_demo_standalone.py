@@ -82,7 +82,7 @@ class SimpleVectorStore:
         
         return dot_product / (norm_a * norm_b)
 
-class SiliconFlowClient:
+class EmbeddingSystem:
     """SiliconFlow API client for embeddings and chat completion."""
     
     def __init__(self, api_key: str, base_url: str = "https://api.siliconflow.cn/v1"):
@@ -185,7 +185,7 @@ class RAGSystem:
     """Complete RAG system using SiliconFlow."""
     
     def __init__(self, api_key: str):
-        self.client = SiliconFlowClient(api_key)
+        self.client = EmbeddingSystem(api_key)
         self.vector_store = SimpleVectorStore()
         logger.info("RAG System initialized")
     

@@ -9,7 +9,7 @@ import logger
 import os
 import sys
 
-
+import logging
 
 # Import logger here to avoid circular imports
 try:

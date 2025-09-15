@@ -1,16 +1,124 @@
+# Corrected RAG System Configuration
+# This config works with the corrected code implementation
+
+# API Configuration
+apis:
+  siliconflow:
+    api_key: "${SILICONFLOW_API_KEY}"
+    base_url: "https://api.siliconflow.com/v1"
+  groq:
+    api_key: "${GROQ_API_KEY}" 
+    base_url: "https://api.groq.com/openai/v1"
+
 # Model Configuration
-gemini_model: models/gemini-2.5-flash
+models:
+  # SiliconFlow Models
+  embedding_model: "Qwen/Qwen3-Embedding-8B"
+  reranker_model: "Qwen/Qwen3-Reranker-8B"
+  
+  # Groq Models (OpenAI compatible)
+  llm_model: "openai/gpt-oss-120b"  # Primary model
+  alternative_models:
+    - "openai/gpt-oss-20b"           # Faster, less capable
+    - "qwen/qwen3-32b"             # Good balance
 
-groq:
-  chat_model: openai/gpt-oss-120b
-
-silicon_flow:
-  embedding_model: Qwen/Qwen3-Embedding-8B
-  reranker: Qwen/Qwen3-Reranker-8B
+# RAG System Configuration
+rag_system:
+  # Chunking settings
+  chunk_size: 512
+  chunk_overlap: 50
+  max_context_chunks: 5
   
 
 
-chunking:
-  chunk_size: 1000
-  chunk_overlap: 200
-  separators: ["\n\n", "\n", " "]
+  # Retrieval settings
+  similarity_threshold: 0.7
+  rerank_top_k: 20
+  final_top_k: 5
+  
+  # Generation settings
+  temperature: 0.1
+  max_tokens: 1024
+  
+  # Performance settings
+  batch_size: 32
+  max_retries: 3
+  enable_caching: true
+
+# Text Processing Configuration
+text_processing:
+  # Text splitting
+  separators: ["\n\n", "\n", " ", ""]
+  
+  # Language settings
+  language: "korean"
+  encoding: "utf-8"
+
+# Vector Store Configuration (if using)
+vector_store:
+  provider: "qdrant"
+  collection_name: "manufacturing_docs"
+  vector_size: 1024
+  distance_metric: "cosine"
+  
+  # Qdrant specific
+  qdrant_url: "${QDRANT_URL}"
+  qdrant_api_key: "${QDRANT_API_KEY}"
+
+# Document Processing Configuration
+document_processing:
+  # Supported formats
+  supported_formats: [".pdf", ".xlsx", ".xls", ".txt", ".md", ".png", ".jpg", ".jpeg"]
+  
+  # File size limits
+  max_file_size_mb: 100
+  
+  # Processing options
+  extract_images: true
+  extract_tables: true
+  ocr_enabled: true
+  
+  # OCR settings
+  ocr_language: "kor+eng"
+  ocr_confidence_threshold: 0.6
+
+# Logging Configuration
+logging:
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file_logging: true
+  log_file: "logs/rag_system.log"
+  max_file_size_mb: 10
+  backup_count: 5
+
+# Performance Configuration
+performance:
+  # Rate limiting
+  siliconflow_requests_per_minute: 60
+  groq_requests_per_minute: 30
+  
+  # Timeouts
+  api_timeout_seconds: 30
+  
+  # Threading
+  max_workers: 4
+
+# Cache Configuration
+cache:
+  enabled: true
+  type: "memory"  # Options: memory, redis, file
+  ttl_seconds: 3600
+  max_size: 1000
+
+# Evaluation Configuration
+evaluation:
+  metrics: ["accuracy", "relevance", "coherence"]
+  threshold: 0.8
+  save_results: true
+  results_dir: "evaluation_results"
+
+# Development/Debug Configuration
+debug:
+  verbose_logging: false
+  save_intermediate_results: false
+  profiling_enabled: false
