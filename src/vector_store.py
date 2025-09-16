@@ -8,12 +8,12 @@ from qdrant_client.http import models
 from qdrant_client.http.models import Distance, VectorParams, PointStruct, Filter, FieldCondition, MatchValue
 import os 
 import sys 
+from dotenv import load_dotenv
+load_dotenv()
+
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
 from src.document_processor import DocumentChunk, ChunkMetadata
-
-
 try:
     from logger.custom_logger import CustomLoggerTracker
     custom_log = CustomLoggerTracker()
@@ -51,49 +51,31 @@ class IndexStats:
 
 
 class QdrantVectorStore:
-    """
-    Qdrant vector database client for storing and retrieving document embeddings.
-    
-    This class provides high-level operations for document indexing, similarity search,
-    and metadata filtering using Qdrant vector database.
-    """
-    
     def __init__(self, config: Dict[str, Any]):
-        """
-        Initialize the Qdrant vector store.
-        
-        Args:
-            config: Configuration dictionary containing Qdrant settings
-        """
         self.config = config
         self.url = config.get('qdrant_url', 'http://localhost:6333')
         self.api_key = config.get('qdrant_api_key')
         self.collection_name = config.get('qdrant_collection', 'manufacturing_docs')
-        self.vector_size = config.get('vector_size', 1024)  # Default for bge-large models
+        self.vector_size = config.get('vector_size', 1024)
         self.distance_metric = Distance.COSINE
         
         # Initialize Qdrant client
+        logger.info(f"Connecting to Qdrant at URL: {os.environ['QDRANT_URL']}")
         self.client = QdrantClient(
-            url=self.url,
-            api_key=self.api_key,
-            timeout=30
-        )
-        
-        # Ensure collection exists
+            url=os.environ['QDRANT_URL'],
+            api_key=os.environ['QDRANT_API_KEY'],
+            timeout=30)
         self._ensure_collection_exists()
-        
-        logger.info(f"Qdrant vector store initialized: {self.url}, collection: {self.collection_name}")
+        logger.info(f"Qdrant vector store initialized: {os.environ['QDRANT_URL']}, collection: {self.collection_name}")
+    
     
     def _ensure_collection_exists(self):
-        """Ensure the collection exists, create if it doesn't."""
         try:
             # Check if collection exists
             collections = self.client.get_collections()
             collection_names = [col.name for col in collections.collections]
-            
             if self.collection_name not in collection_names:
                 logger.info(f"Creating collection: {self.collection_name}")
-                
                 # Create collection with vector configuration
                 self.client.create_collection(
                     collection_name=self.collection_name,
@@ -105,7 +87,6 @@ class QdrantVectorStore:
                 
                 # Create payload indexes for efficient filtering
                 self._create_payload_indexes()
-                
                 logger.info(f"Collection {self.collection_name} created successfully")
             else:
                 logger.debug(f"Collection {self.collection_name} already exists")
@@ -114,59 +95,42 @@ class QdrantVectorStore:
             logger.error(f"Failed to ensure collection exists: {e}")
             raise
     
+    
+    
     def _create_payload_indexes(self):
-        """Create indexes on payload fields for efficient filtering."""
         try:
-            # Index on document_id for document-level operations
             self.client.create_payload_index(
                 collection_name=self.collection_name,
                 field_name="document_id",
-                field_schema=models.KeywordIndexParams()
-            )
-            
+                field_schema=models.KeywordIndexParams())
             # Index on document type for filtering by file type
             self.client.create_payload_index(
                 collection_name=self.collection_name,
                 field_name="document_type",
-                field_schema=models.KeywordIndexParams()
-            )
+                field_schema=models.KeywordIndexParams())
             
             # Index on page_number for PDF citations
             self.client.create_payload_index(
                 collection_name=self.collection_name,
                 field_name="page_number",
-                field_schema=models.IntegerIndexParams()
-            )
+                field_schema=models.IntegerIndexParams())
             
             # Index on worksheet_name for Excel citations
             self.client.create_payload_index(
                 collection_name=self.collection_name,
                 field_name="worksheet_name",
-                field_schema=models.KeywordIndexParams()
-            )
+                field_schema=models.KeywordIndexParams())
             
             logger.debug("Payload indexes created successfully")
-            
         except Exception as e:
             logger.warning(f"Failed to create payload indexes: {e}")
     
     def add_documents(self, chunks: List[DocumentChunk]) -> bool:
-        """
-        Add document chunks to the vector store.
-        
-        Args:
-            chunks: List of DocumentChunk objects with embeddings
-            
-        Returns:
-            True if successful, False otherwise
-        """
         if not chunks:
             logger.warning("No chunks provided for indexing")
             return True
-        
         try:
             points = []
-            
             for chunk in chunks:
                 if not chunk.embedding:
                     logger.warning(f"Chunk {chunk.metadata.chunk_id} has no embedding, skipping")
@@ -204,7 +168,6 @@ class QdrantVectorStore:
                 )
                 
                 points.append(point)
-            
             if not points:
                 logger.warning("No valid points to index")
                 return True
@@ -212,9 +175,7 @@ class QdrantVectorStore:
             # Upload points to Qdrant
             operation_info = self.client.upsert(
                 collection_name=self.collection_name,
-                points=points
-            )
-            
+                points=points)
             logger.info(f"Successfully indexed {len(points)} chunks to Qdrant")
             return True
             
@@ -224,21 +185,9 @@ class QdrantVectorStore:
     
     def similarity_search(self, query_embedding: List[float], k: int = 10, 
                          filters: Optional[Dict[str, Any]] = None) -> List[SearchResult]:
-        """
-        Perform similarity search in the vector store.
-        
-        Args:
-            query_embedding: Query embedding vector
-            k: Number of results to return
-            filters: Optional filters to apply
-            
-        Returns:
-            List of SearchResult objects
-        """
         try:
             # Build filter conditions
             filter_conditions = self._build_filter_conditions(filters) if filters else None
-            
             # Perform search
             search_results = self.client.search(
                 collection_name=self.collection_name,
@@ -265,8 +214,7 @@ class QdrantVectorStore:
                     section_title=payload.get("section_title"),
                     image_references=payload.get("image_references", []),
                     table_references=payload.get("table_references", []),
-                    confidence_score=payload.get("confidence_score")
-                )
+                    confidence_score=payload.get("confidence_score"))
                 
                 # Reconstruct document chunk
                 chunk = DocumentChunk(
@@ -298,29 +246,9 @@ class QdrantVectorStore:
     
     def filtered_search(self, query_embedding: List[float], filters: Dict[str, Any], 
                        k: int = 10) -> List[SearchResult]:
-        """
-        Perform filtered similarity search.
-        
-        Args:
-            query_embedding: Query embedding vector
-            filters: Filters to apply (document_id, document_type, etc.)
-            k: Number of results to return
-            
-        Returns:
-            List of SearchResult objects
-        """
         return self.similarity_search(query_embedding, k, filters)
     
     def delete_document(self, document_id: str) -> bool:
-        """
-        Delete all chunks belonging to a document.
-        
-        Args:
-            document_id: ID of the document to delete
-            
-        Returns:
-            True if successful, False otherwise
-        """
         try:
             # Delete points with matching document_id
             self.client.delete(
@@ -344,16 +272,10 @@ class QdrantVectorStore:
             logger.error(f"Failed to delete document {document_id}: {e}")
             return False
     
+    
     def get_collection_info(self) -> Optional[IndexStats]:
-        """
-        Get information about the collection.
-        
-        Returns:
-            IndexStats object with collection information
-        """
         try:
             collection_info = self.client.get_collection(self.collection_name)
-            
             # Count unique documents
             # This is a simplified count - in production you might want to use aggregation
             search_results = self.client.scroll(
@@ -465,16 +387,6 @@ class QdrantVectorStore:
             return False
     
     def create_collection(self, vector_size: int, distance_metric: Distance = Distance.COSINE) -> bool:
-        """
-        Create a new collection with specified parameters.
-        
-        Args:
-            vector_size: Size of the embedding vectors
-            distance_metric: Distance metric to use
-            
-        Returns:
-            True if successful, False otherwise
-        """
         try:
             self.client.create_collection(
                 collection_name=self.collection_name,
@@ -488,23 +400,14 @@ class QdrantVectorStore:
             self.vector_size = vector_size
             self.distance_metric = distance_metric
             
-            # Create payload indexes
             self._create_payload_indexes()
-            
             logger.info(f"Created collection {self.collection_name} with vector size {vector_size}")
             return True
-            
         except Exception as e:
             logger.error(f"Failed to create collection: {e}")
             return False
     
     def delete_collection(self) -> bool:
-        """
-        Delete the entire collection.
-        
-        Returns:
-            True if successful, False otherwise
-        """
         try:
             self.client.delete_collection(self.collection_name)
             logger.info(f"Deleted collection: {self.collection_name}")
@@ -513,3 +416,22 @@ class QdrantVectorStore:
         except Exception as e:
             logger.error(f"Failed to delete collection: {e}")
             return False
+        
+        
+        
+        
+        
+if __name__=="__main__":
+    logger.info(f"Vector store init ..")
+    config = {
+        'qdrant_url': os.getenv('QDRANT_URL', 'http://localhost:6333'),
+        'qdrant_api_key': os.getenv('QDRANT_API_KEY'),
+        'qdrant_collection': 'manufacturing_docs',
+        'vector_size': 1024
+    }
+    vector_store = QdrantVectorStore(config)
+    health = vector_store.health_check()
+    if health:
+        logger.info("Vector store is healthy and ready.")
+    else:
+        logger.error("Vector store is not accessible.")

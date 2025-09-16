@@ -6,12 +6,13 @@ import os
 import sys 
 
 
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from src.embedding_system import EmbeddingSystem, RerankResult
 from src.vector_store import QdrantVectorStore, SearchResult
 from src.groq_client import LLMSystem
 from src.document_processor import DocumentChunk
+from src.utilites import load_yaml_config
 
 
 try:
@@ -56,20 +57,7 @@ class RAGResponse:
 
 
 class RAGEngine:
-    """
-    Core RAG engine that orchestrates retrieval and generation.
-    
-    This engine combines vector search, reranking, and LLM generation to provide
-    accurate answers with proper citations for manufacturing questions.
-    """
-    
     def __init__(self, config: Dict[str, Any]):
-        """
-        Initialize the RAG engine.
-        
-        Args:
-            config: Configuration dictionary containing RAG settings
-        """
         self.config = config
         
         # Initialize components
@@ -83,42 +71,28 @@ class RAGEngine:
         self.rerank_top_k = config.get('rerank_top_k', 20)
         self.final_top_k = config.get('final_top_k', 5)
         self.max_context_length = config.get('max_context_length', 4000)
-        
         logger.info(f"RAG engine initialized with max_context_chunks={self.max_context_chunks}")
     
+
     def answer_question(self, question: str, filters: Optional[Dict[str, Any]] = None) -> RAGResponse:
-        """
-        Answer a question using RAG pipeline.
-        
-        Args:
-            question: Question to answer
-            filters: Optional filters for document retrieval
-            
-        Returns:
-            RAGResponse with answer and citations
-        """
         start_time = time.time()
-        
         try:
             logger.info(f"Processing question: {question[:100]}...")
-            
             # Step 1: Generate query embedding
-            query_embedding = self.embedding_system.generate_query_embedding(question)
+            query_embedding = self.embedding_system.generate_embeddings(question)
             if not query_embedding:
                 return RAGResponse(
                     answer="I apologize, but I'm unable to process your question due to an embedding generation error.",
                     confidence_score=0.0,
                     success=False,
-                    error_message="Failed to generate query embedding"
-                )
+                    error_message="Failed to generate query embedding")
             
             # Step 2: Retrieve relevant chunks
             retrieval_start = time.time()
             search_results = self.vector_store.similarity_search(
                 query_embedding=query_embedding,
                 k=self.rerank_top_k,
-                filters=filters
-            )
+                filters=filters)
             retrieval_time = time.time() - retrieval_start
             
             if not search_results:
@@ -127,9 +101,8 @@ class RAGEngine:
                     confidence_score=0.0,
                     retrieval_time=retrieval_time,
                     processing_time=time.time() - start_time,
-                    success=True
-                )
-            
+                    success=True)
+            logger.info(f"Retrieved {len(search_results)} chunks from vector store in {retrieval_time:.2f}s")
             # Step 3: Rerank results
             rerank_start = time.time()
             reranked_chunks = self._rerank_chunks(question, search_results)
@@ -138,17 +111,31 @@ class RAGEngine:
             # Step 4: Select top chunks and build context
             context_chunks = reranked_chunks[:self.final_top_k]
             context_text = self._build_context(context_chunks)
+            logger.info(f"Built context from top {len(context_chunks)} chunks")
             
             # Step 5: Generate answer
             generation_start = time.time()
             answer = self.llm_system.answer_question(question, context_text)
             generation_time = time.time() - generation_start
-            
+            if not answer:
+                return RAGResponse(
+                    answer="I apologize, but I was unable to generate an answer to your question.",
+                    confidence_score=0.0,
+                    retrieval_time=retrieval_time,
+                    generation_time=generation_time,
+                    rerank_time=rerank_time,
+                    processing_time=time.time() - start_time,
+                    success=False,
+                    error_message="LLM failed to generate an answer")
+                
+            logger.info(f"Generated answer in {generation_time:.2f}s")
             # Step 6: Extract citations
             citations = self._extract_citations(context_chunks)
+            logger.info(f"Extracted {len(citations)} citations")
             
             # Step 7: Calculate confidence score
             confidence_score = self._calculate_confidence_score(search_results, answer)
+            logger.info(f"Calculated confidence score: {confidence_score:.2f}")
             
             total_time = time.time() - start_time
             
@@ -164,9 +151,7 @@ class RAGEngine:
                 total_chunks_retrieved=len(search_results),
                 total_chunks_reranked=len(reranked_chunks),
                 model_used=self.llm_system.default_model,
-                success=True
-            )
-            
+                success=True)
             logger.info(f"Question answered successfully in {total_time:.2f}s")
             return response
             
@@ -181,20 +166,11 @@ class RAGEngine:
                 success=False,
                 error_message=error_msg
             )
+
+    
     
     def get_relevant_context(self, question: str, k: int = 5, 
                            filters: Optional[Dict[str, Any]] = None) -> List[DocumentChunk]:
-        """
-        Get relevant context chunks for a question without generating an answer.
-        
-        Args:
-            question: Question to find context for
-            k: Number of chunks to return
-            filters: Optional filters for document retrieval
-            
-        Returns:
-            List of relevant DocumentChunk objects
-        """
         try:
             # Generate query embedding
             query_embedding = self.embedding_system.generate_query_embedding(question)
@@ -205,9 +181,7 @@ class RAGEngine:
             search_results = self.vector_store.similarity_search(
                 query_embedding=query_embedding,
                 k=min(k * 2, self.rerank_top_k),  # Get more for reranking
-                filters=filters
-            )
-            
+                filters=filters)
             if not search_results:
                 return []
             
@@ -220,16 +194,6 @@ class RAGEngine:
             return []
     
     def _rerank_chunks(self, question: str, search_results: List[SearchResult]) -> List[SearchResult]:
-        """
-        Rerank search results using the reranking model.
-        
-        Args:
-            question: Original question
-            search_results: Initial search results
-            
-        Returns:
-            Reranked search results
-        """
         try:
             if len(search_results) <= 1:
                 return search_results
@@ -329,17 +293,7 @@ class RAGEngine:
         return ", ".join(parts) if parts else "Unknown source"
     
     def _extract_citations(self, search_results: List[SearchResult]) -> List[Citation]:
-        """
-        Extract citation information from search results.
-        
-        Args:
-            search_results: List of search results
-            
-        Returns:
-            List of Citation objects
-        """
         citations = []
-        
         for result in search_results:
             chunk = result.chunk
             
@@ -360,16 +314,6 @@ class RAGEngine:
         return citations
     
     def _calculate_confidence_score(self, search_results: List[SearchResult], answer: str) -> float:
-        """
-        Calculate confidence score for the answer.
-        
-        Args:
-            search_results: Search results used for answer
-            answer: Generated answer
-            
-        Returns:
-            Confidence score between 0 and 1
-        """
         if not search_results:
             return 0.0
         
@@ -388,13 +332,9 @@ class RAGEngine:
         
         return min(max(confidence, 0.0), 1.0)  # Clamp to [0, 1]
     
+    
+    
     def health_check(self) -> Dict[str, bool]:
-        """
-        Check health of all RAG components.
-        
-        Returns:
-            Dictionary with health status of each component
-        """
         return {
             "vector_store": self.vector_store.health_check(),
             "llm_system": self.llm_system.client.health_check(),
@@ -402,12 +342,6 @@ class RAGEngine:
         }
     
     def get_stats(self) -> Dict[str, Any]:
-        """
-        Get statistics about the RAG system.
-        
-        Returns:
-            Dictionary with system statistics
-        """
         try:
             vector_stats = self.vector_store.get_collection_info()
             embedding_stats = self.embedding_system.get_cache_stats()
@@ -426,3 +360,20 @@ class RAGEngine:
         except Exception as e:
             logger.error(f"Failed to get RAG stats: {e}")
             return {"error": str(e)}
+        
+
+
+if __name__ == "__main__":
+    from src.utilites import validate_api_keys
+    validation_results = validate_api_keys()
+    if not validation_results['valid']:
+        logger.error("Missing required API keys. Please set them in the environment variables.")
+    else:
+        logger.info("All required API keys are present.")
+    ## Example usage
+    config = load_yaml_config("src/config.yaml")
+    rag_engine = RAGEngine(config)
+    response = rag_engine.answer_question("What is the capital of France?")
+    logger.info(f"Answer: {response.answer}, Confidence: {response.confidence_score}")
+    rag_engine.health_check()
+    rag_engine.get_stats()

@@ -7,7 +7,12 @@ from pathlib import Path
 from typing import Dict, List, Optional, Any, Union
 from enum import Enum
 import hashlib
+import sys 
+import os 
 
+
+
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))  # Ensure current directory is in
 
 try:
     from logger.custom_logger import CustomLoggerTracker
@@ -404,3 +409,10 @@ class DocumentProcessorFactory:
 
 if __name__=="__main__":
     logger.info(f"Docs processor init ..")
+    # Example usage (for testing purposes)
+    config = {'max_file_size_mb': 50}
+    processor = DocumentProcessorFactory.create_processor("example.pdf", config)
+    processed_doc = processor.process_document("example.pdf")
+    chunks = processor.extract_chunks(processed_doc)
+    for chunk in chunks:
+        print(chunk)

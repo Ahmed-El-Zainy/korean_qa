@@ -1,7 +1,7 @@
 import logging
 import fitz  # PyMuPDF
 from pathlib import Path
-from typing import Dict, List, Any, Optional, Tuple
+from typing import Dict, List, Any, Optional
 import re
 from dataclasses import dataclass
 import os 
@@ -14,7 +14,6 @@ from src.document_processor import (
     ProcessedDocument,
     DocumentType,
     ProcessingStatus,
-    DocumentProcessingError,
     ExtractedImage,
     ExtractedTable,
     DocumentProcessorFactory
@@ -486,3 +485,11 @@ DocumentProcessorFactory.register_processor(DocumentType.PDF, PDFProcessor)
 
 if __name__=="__main__":
     logger.info(f"PDF processor init ..")
+    
+    ## Test code (for demonstration purposes)
+    config = {'image_processing': True, 'table_extraction': True}
+    processor = DocumentProcessorFactory.create_processor("/Users/ahmedmostafa/Downloads/eval_Korean_qa/data/documents/원재료사용현황.pdf", config)
+    processed_doc = processor.process_document("/Users/ahmedmostafa/Downloads/eval_Korean_qa/data/documents/원재료사용현황.pdf")
+    chunks = processor.extract_chunks(processed_doc)
+    for chunk in chunks:
+        print(chunk)

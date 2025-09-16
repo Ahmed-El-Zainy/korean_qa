@@ -7,12 +7,10 @@ import json
 import os 
 import os 
 import sys 
-
+from dotenv import load_dotenv
+load_dotenv()
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
-
-
 # Setup logging
 try:
     from logger.custom_logger import CustomLoggerTracker
@@ -316,96 +314,65 @@ Present the information in a structured, easy-to-read format."""
             return False
 
 
+
+
 class LLMSystem:
-    """
-    High-level LLM system that manages multiple models and provides unified interface.
-    """
-    
     def __init__(self, config: Dict[str, Any]):
-        """
-        Initialize the LLM system.
-        
-        Args:
-            config: Configuration dictionary containing LLM settings
-        """
         self.config = config
-        self.api_key = config.get('groq_api_key')
+        self.api_key = os.getenv('GROQ_API_KEY') or config.get('groq_api_key')
         self.default_model = config.get('llm_model', 'openai/gpt-oss-120b')
         self.max_retries = config.get('max_retries', 3)
-        
         if not self.api_key:
             raise ValueError("Groq API key is required")
-        
-        # Initialize Groq client
         self.client = GroqClient(self.api_key)
-        
         logger.info(f"LLM system initialized with default model: {self.default_model}")
     
     def answer_question(self, question: str, context: str, model: Optional[str] = None) -> str:
-        """
-        Answer a question with retry logic.
-        
-        Args:
-            question: Question to answer
-            context: Context information
-            model: Optional model override
-            
-        Returns:
-            Generated answer text
-        """
         model = model or self.default_model
-        
         for attempt in range(self.max_retries):
             try:
                 response = self.client.answer_question(question, context, model)
-                
                 if response.success:
                     return response.text
                 else:
                     logger.warning(f"LLM generation failed (attempt {attempt + 1}): {response.error_message}")
                     if attempt < self.max_retries - 1:
                         time.sleep(2 ** attempt)  # Exponential backoff
-                    
             except Exception as e:
                 logger.warning(f"LLM generation error (attempt {attempt + 1}): {e}")
                 if attempt < self.max_retries - 1:
                     time.sleep(2 ** attempt)
-        
         # Return fallback response if all attempts failed
         return "I apologize, but I'm unable to generate a response at this time due to technical difficulties. Please try again later."
     
     def summarize_content(self, content: str, model: Optional[str] = None) -> str:
-        """
-        Summarize content with retry logic.
-        
-        Args:
-            content: Content to summarize
-            model: Optional model override
-            
-        Returns:
-            Generated summary text
-        """
         model = model or self.default_model
-        
         for attempt in range(self.max_retries):
             try:
                 response = self.client.summarize_document(content, model)
-                
                 if response.success:
                     return response.text
                 else:
                     logger.warning(f"Summarization failed (attempt {attempt + 1}): {response.error_message}")
                     if attempt < self.max_retries - 1:
                         time.sleep(2 ** attempt)
-                    
             except Exception as e:
                 logger.warning(f"Summarization error (attempt {attempt + 1}): {e}")
                 if attempt < self.max_retries - 1:
                     time.sleep(2 ** attempt)
-        
         return "Unable to generate summary at this time."
 
 
 if __name__=="__main__":
     logger.info(f"Groq client init ..")
-    
+    ## Test code (for demonstration purposes)
+    config = {
+        'groq_api_key': os.getenv('GROQ_API_KEY'),
+        'llm_model': 'openai/gpt-oss-120b',
+        'max_retries': 3
+    }
+    llm_system = LLMSystem(config)
+    question = "What is the capital of France?"
+    context = "France is a country in Western Europe."
+    answer = llm_system.answer_question(question, context)
+    logger.info(f"Answer: {answer}")

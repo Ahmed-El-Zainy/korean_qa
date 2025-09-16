@@ -9,9 +9,10 @@ import json
 import logging
 import os
 import sys
-from typing import List, Dict, Any, Optional, Tuple
+from typing import Dict, Any, Tuple
 from datetime import datetime
-import hashlib
+from dotenv import load_dotenv
+load_dotenv()
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
