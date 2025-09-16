@@ -1,9 +1,3 @@
-#!/usr/bin/env python3
-"""
-Demo launcher for Korean Q&A Evaluation System.
-Choose between Gradio and Streamlit interfaces.
-"""
-
 import sys
 import subprocess
 import os

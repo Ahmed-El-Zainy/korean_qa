@@ -13,7 +13,8 @@ from typing import List, Dict, Any, Optional, Tuple
 from datetime import datetime
 import hashlib
 
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 
 try:
     from src.config import Config
@@ -36,11 +37,9 @@ except ImportError:
 class RAGGradioDemo:
     """
     Gradio demo application for the Manufacturing RAG Agent.
-    
     This demo provides a user-friendly interface for document upload,
     question answering, and result visualization using Gradio.
     """
-    
     def __init__(self):
         """Initialize the RAG demo application."""
         self.config = None

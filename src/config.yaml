@@ -9,7 +9,7 @@ apis:
   groq:
     api_key: "${GROQ_API_KEY}" 
     base_url: "https://api.groq.com/openai/v1"
-
+    
 # Model Configuration
 models:
   # SiliconFlow Models
