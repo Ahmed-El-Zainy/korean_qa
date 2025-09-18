@@ -21,6 +21,7 @@ except ImportError:
     # Fallback to standard logging if custom logger not available
     logger = logging.getLogger("groq_client")
 
+GROQ_API_KEY=os.getenv('GROQ_API_KEY', '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')
 
 
 @dataclass
@@ -319,7 +320,7 @@ Present the information in a structured, easy-to-read format."""
 class LLMSystem:
     def __init__(self, config: Dict[str, Any]):
         self.config = config
-        self.api_key = os.getenv('GROQ_API_KEY') or config.get('groq_api_key')
+        self.api_key = GROQ_API_KEY
         self.default_model = config.get('llm_model', 'openai/gpt-oss-120b')
         self.max_retries = config.get('max_retries', 3)
         if not self.api_key:
@@ -367,7 +368,7 @@ if __name__=="__main__":
     logger.info(f"Groq client init ..")
     ## Test code (for demonstration purposes)
     config = {
-        'groq_api_key': os.getenv('GROQ_API_KEY'),
+        'groq_api_key': GROQ_API_KEY,
         'llm_model': 'openai/gpt-oss-120b',
         'max_retries': 3
     }

@@ -24,6 +24,7 @@ except ImportError:
 
 
 SILICONFLOW_API_KEY = os.getenv('SILICONFLOW_API_KEY', 'sk-mamyyymhoyklygepxyaazxpxiaphjjbbynxgdrzebbmusmwl')
+
 @dataclass
 class EmbeddingResult:
     """Result of embedding generation."""
