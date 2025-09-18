@@ -165,7 +165,8 @@ class Config:
     @property
     def siliconflow_api_key(self) -> str:
         """Get Silicon Flow API key from environment."""
-        return self.get_env_var('SILICONFLOW_API_KEY', required=False) or ""
+        SILICONFLOW_API_KEY= os.getenv('SILICONFLOW_API_KEY', 'sk-mamyyymhoyklygepxyaazxpxiaphjjbbynxgdrzebbmusmwl')
+        return SILICONFLOW_API_KEY
     
     @property
     def qdrant_url(self) -> str:
