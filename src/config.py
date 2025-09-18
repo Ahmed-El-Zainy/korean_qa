@@ -148,39 +148,45 @@ class Config:
         performance_config = self.get('performance', {})
         if performance_config:
             rag_config.update(performance_config)
-            
         return rag_config
     
     @property
     def groq_api_key(self) -> str:
-        """Get Groq API key from environment."""
         GROQ_API_KEY=os.getenv('GROQ_API_KEY', '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')
-        return GROQ_API_KEY
+        if GROQ_API_KEY:
+            return GROQ_API_KEY
+        return self.get('groq_api_key', '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')
     
     @property
     def groq_url(self) -> str:
         """Get Groq URL from environment or config."""
+        GROQ_URL = os.getenv('GROQ_URL', 'https://api.groq.com/openai/v1')
+        if GROQ_URL:
+            return GROQ_URL
         return self.get('groq_url', 'https://api.groq.com/openai/v1')
     
     @property
     def siliconflow_api_key(self) -> str:
         """Get Silicon Flow API key from environment."""
         SILICONFLOW_API_KEY= os.getenv('SILICONFLOW_API_KEY', 'sk-mamyyymhoyklygepxyaazxpxiaphjjbbynxgdrzebbmusmwl')
-        return SILICONFLOW_API_KEY
+        if SILICONFLOW_API_KEY:
+            return SILICONFLOW_API_KEY
+        return self.get('siliconflow_api_key', 'sk-mamyyymhoyklygepxyaazxpxiaphjjbbynxgdrzebbmusmwl')
     
     @property
-    def qdrant_url(self) -> str:
-        """Get Qdrant URL from environment or config."""
-        env_url = self.get_env_var('QDRANT_URL', required=False)
-        if env_url:
-            return env_url
-        return self.get('vector_store.qdrant_url', 'http://localhost:6333')
+    def qdrant_url(self) -> str:        
+        QDRANT_URL = os.getenv('QDRANT_URL', "https://50f53cc8-bbb0-4939-8254-8f025a577222.us-west-2-0.aws.cloud.qdrant.io")
+        if QDRANT_URL:
+            return QDRANT_URL 
+        return self.get('qdrant_url', "https://50f53cc8-bbb0-4939-8254-8f025a577222.us-west-2-0.aws.cloud.qdrant.io")
     
     @property
     def qdrant_api_key(self) -> str:
         """Get Qdrant API key from environment."""
         QDRANT_API_KEY=os.getenv('QDRANT_API_KEY', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3MiOiJtIn0.L6Xwubquqwa9CXj3kVn9jiv64Cbe85vRdLv_LltuzZg')
-        return QDRANT_API_KEY
+        if QDRANT_API_KEY:
+            return QDRANT_API_KEY
+        return self.get('qdrant_api_key', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3MiOiJtIn0.L6Xwubquqwa9CXj3kVn9jiv64Cbe85vRdLv_LltuzZg')
     
     @property
     def document_processing_config(self) -> Dict[str, Any]:

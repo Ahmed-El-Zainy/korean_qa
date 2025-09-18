@@ -260,9 +260,9 @@ if __name__ == "__main__":
     #     logger.error(f"api of weaviate is not working")
     # client.close()
     
-    gen_prompt = Prompt_template_LLM_Generation.format(
-        new_query="what is autism")
-    logger.info(f"groq qwen generate.....: {groq_qwen_generate_content(gen_prompt)}")
+    # gen_prompt = Prompt_template_LLM_Generation.format(
+    #     new_query="what is autism")
+    # logger.info(f"groq qwen generate.....: {groq_qwen_generate_content(gen_prompt)}")
     
     print(f"=" * 50)
     response = siliconflow_qwen_generate_content("what is autism")
