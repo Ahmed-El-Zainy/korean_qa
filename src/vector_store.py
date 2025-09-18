@@ -37,8 +37,8 @@ class SearchResult:
     def __post_init__(self):
         if self.metadata is None:
             self.metadata = {}
-
-
+            
+            
 @dataclass
 class IndexStats:
     """Statistics about the vector index."""
@@ -62,9 +62,9 @@ class QdrantVectorStore:
         # Initialize Qdrant client
         logger.info(f"Connecting to Qdrant at URL: {os.environ['QDRANT_URL']}")
         self.client = QdrantClient(
-            url=os.environ['QDRANT_URL'],
-            api_key=os.environ['QDRANT_API_KEY'],
-            timeout=30)
+            url="https://50f53cc8-bbb0-4939-8254-8f025a577222.us-west-2-0.aws.cloud.qdrant.io:6333", 
+            api_key="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3MiOiJtIn0.gHOXbfqPucRwhczrW8s3VSZbconqQ6Rk49Uaz9ZChdE",)
+        
         self._ensure_collection_exists()
         logger.info(f"Qdrant vector store initialized: {os.environ['QDRANT_URL']}, collection: {self.collection_name}")
     

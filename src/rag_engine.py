@@ -21,13 +21,11 @@ try:
     logger = custom_log.get_logger("rag_engine")
 
 except ImportError:
-    # Fallback to standard logging if custom logger not available
-    logger = logging.getLogger("excel_processor")
+    logger = logging.getLogger("rag_engine")
 
 
 @dataclass
 class Citation:
-    """Citation information for a source."""
     source_file: str
     page_number: Optional[int] = None
     worksheet_name: Optional[str] = None
@@ -40,7 +38,6 @@ class Citation:
 
 @dataclass
 class RAGResponse:
-    """Response from RAG system."""
     answer: str
     confidence_score: float
     citations: List[Citation] = field(default_factory=list)
@@ -79,13 +76,15 @@ class RAGEngine:
         try:
             logger.info(f"Processing question: {question[:100]}...")
             # Step 1: Generate query embedding
-            query_embedding = self.embedding_system.generate_embeddings(question)
+            query_embedding = self.embedding_system.generate_query_embedding(question)
             if not query_embedding:
                 return RAGResponse(
                     answer="I apologize, but I'm unable to process your question due to an embedding generation error.",
                     confidence_score=0.0,
                     success=False,
                     error_message="Failed to generate query embedding")
+            
+            
             
             # Step 2: Retrieve relevant chunks
             retrieval_start = time.time()
@@ -102,6 +101,7 @@ class RAGEngine:
                     retrieval_time=retrieval_time,
                     processing_time=time.time() - start_time,
                     success=True)
+                
             logger.info(f"Retrieved {len(search_results)} chunks from vector store in {retrieval_time:.2f}s")
             # Step 3: Rerank results
             rerank_start = time.time()
@@ -172,7 +172,6 @@ class RAGEngine:
     def get_relevant_context(self, question: str, k: int = 5, 
                            filters: Optional[Dict[str, Any]] = None) -> List[DocumentChunk]:
         try:
-            # Generate query embedding
             query_embedding = self.embedding_system.generate_query_embedding(question)
             if not query_embedding:
                 return []
@@ -180,7 +179,7 @@ class RAGEngine:
             # Retrieve and rerank
             search_results = self.vector_store.similarity_search(
                 query_embedding=query_embedding,
-                k=min(k * 2, self.rerank_top_k),  # Get more for reranking
+                k=min(k * 2, self.rerank_top_k),
                 filters=filters)
             if not search_results:
                 return []
@@ -373,7 +372,4 @@ if __name__ == "__main__":
     ## Example usage
     config = load_yaml_config("src/config.yaml")
     rag_engine = RAGEngine(config)
-    response = rag_engine.answer_question("What is the capital of France?")
-    logger.info(f"Answer: {response.answer}, Confidence: {response.confidence_score}")
-    rag_engine.health_check()
-    rag_engine.get_stats()
+    

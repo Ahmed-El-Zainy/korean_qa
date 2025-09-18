@@ -88,7 +88,6 @@ class ChunkMetadata:
 
 @dataclass
 class DocumentChunk:
-    """Represents a chunk of processed document content."""
     content: str
     metadata: ChunkMetadata
     embedding: Optional[List[float]] = None
@@ -126,11 +125,10 @@ class ProcessedDocument:
             self.file_size = Path(self.file_path).stat().st_size
     
     def _generate_checksum(self) -> str:
-        """Generate MD5 checksum for the document file."""
         try:
             hash_md5 = hashlib.md5()
             with open(self.file_path, "rb") as f:
-                for chunk in iter(lambda: f.read(4096), b""):
+                for chunk in iter(lambda: f.read(1024), b""):
                     hash_md5.update(chunk)
             return hash_md5.hexdigest()
         except Exception as e:
@@ -159,70 +157,27 @@ class UnsupportedDocumentTypeError(DocumentProcessingError):
 
 class DocumentProcessor(ABC):
     def __init__(self, config: Dict[str, Any]):
-        """
-        Initialize the document processor.
-        
-        Args:
-            config: Configuration dictionary containing processor settings
-        """
         self.config = config
         self.supported_extensions = self._get_supported_extensions()
         logger.info(f"Initialized {self.__class__.__name__} with config: {config}")
     
     @abstractmethod
     def _get_supported_extensions(self) -> List[str]:
-        """
-        Get list of supported file extensions.
-        
-        Returns:
-            List of supported file extensions (e.g., ['.pdf', '.docx'])
-        """
         pass
+    
     
     @abstractmethod
     def process_document(self, file_path: str) -> ProcessedDocument:
-        """
-        Process a document and extract its content.
         
-        Args:
-            file_path: Path to the document file
-            
-        Returns:
-            ProcessedDocument containing extracted content and metadata
-            
-        Raises:
-            DocumentProcessingError: If processing fails
-            UnsupportedDocumentTypeError: If document type is not supported
-        """
         pass
     
     def can_process(self, file_path: str) -> bool:
-        """
-        Check if this processor can handle the given file.
-        
-        Args:
-            file_path: Path to the file to check
-            
-        Returns:
-            True if this processor can handle the file, False otherwise
-        """
         file_extension = Path(file_path).suffix.lower()
         return file_extension in self.supported_extensions
     
     
     def extract_chunks(self, document: ProcessedDocument, chunk_size: int = 512, 
                       chunk_overlap: int = 50) -> List[DocumentChunk]:
-        """
-        Extract chunks from a processed document.
-        
-        Args:
-            document: The processed document to chunk
-            chunk_size: Maximum size of each chunk in characters
-            chunk_overlap: Number of characters to overlap between chunks
-            
-        Returns:
-            List of DocumentChunk objects
-        """
         if not document.content.strip():
             logger.warning(f"No content to chunk in document {document.document_id}")
             return []
@@ -274,15 +229,6 @@ class DocumentProcessor(ABC):
         return chunks
     
     def _detect_document_type(self, file_path: str) -> DocumentType:
-        """
-        Detect the document type based on file extension.
-        
-        Args:
-            file_path: Path to the document file
-            
-        Returns:
-            DocumentType enum value
-        """
         extension = Path(file_path).suffix.lower()
         
         if extension == '.pdf':

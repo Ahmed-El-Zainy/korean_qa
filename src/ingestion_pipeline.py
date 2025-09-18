@@ -61,30 +61,34 @@ class IngestionStats:
     errors: List[str]
 
 
+
+def jina_embeddings(text: str) -> List[float]:
+    JINA_API_KEY= "jina_a75b55a8a9524bb697ea016b164211ebF5IduSgA0Ku8lmI0pS9fnXoZ83Su"
+    import requests
+
+    headers = {
+    'Content-Type': 'application/json',
+    'Authorization': 'Bearer jina_a75b55a8a9524bb697ea016b164211ebF5IduSgA0Ku8lmI0pS9fnXoZ83Su'}
+
+    data = {
+        "model": "jina-embeddings-v3",
+        "task": "retrieval.passage",
+        "input": text}
+
+    response = requests.post('https://api.jina.ai/v1/embeddings', headers=headers, json=data)
+    return response.json()['data'][0]['embedding']
+
+
 class DocumentIngestionPipeline:
-    """
-    Complete document ingestion pipeline.
-    
-    This pipeline orchestrates the entire process of document ingestion including:
-    - Document processing and content extraction
-    - Image OCR processing
-    - Text chunking and embedding generation
-    - Vector storage and metadata management
-    """
-    
     def __init__(self, config: Dict[str, Any]):
-        """
-        Initialize the ingestion pipeline.
-        
-        Args:
-            config: Configuration dictionary containing all component settings
-        """
         self.config = config
-        
         # Initialize components
         self.embedding_system = EmbeddingSystem(config)
         self.vector_store = QdrantVectorStore(config)
         self.metadata_manager = MetadataManager(config)
+        # Initialize components with correct vector dimensions
+        self.vector_size = config.get('vector_size', 1024)  # Match Jina's dimension
+        self.config['vector_size'] = self.vector_size  # Update config for other components
         
         # Initialize image processor for OCR
         self.image_processor = ImageProcessor(config)
@@ -166,10 +170,16 @@ class DocumentIngestionPipeline:
                     chunks_indexed=0,
                     error_message="No content chunks could be created"
                 )
+                
+                
+                
             
             # Step 4: Generate embeddings
             chunk_texts = [chunk.content for chunk in chunks]
-            embeddings = self.embedding_system.generate_embeddings(chunk_texts)
+            logger.info(chunk_texts[:2])
+            # embeddings = self.embedding_system.generate_embeddings(chunk_texts)
+            embeddings = [jina_embeddings(text) for text in chunk_texts]    
+            
             
             if not embeddings or len(embeddings) != len(chunks):
                 logger.error(f"Embedding generation failed for document: {filename}")
@@ -186,6 +196,8 @@ class DocumentIngestionPipeline:
             # Attach embeddings to chunks
             for chunk, embedding in zip(chunks, embeddings):
                 chunk.embedding = embedding
+            
+            
             
             # Step 5: Store in vector database
             vector_success = self.vector_store.add_documents(chunks)
@@ -388,15 +400,6 @@ class DocumentIngestionPipeline:
             return False
     
     def _process_document(self, file_path: str) -> ProcessedDocument:
-        """
-        Process a document using the appropriate processor.
-        
-        Args:
-            file_path: Path to the document file
-            
-        Returns:
-            ProcessedDocument object
-        """
         try:
             processor = DocumentProcessorFactory.create_processor(file_path, self.config)
             return processor.process_document(file_path)
@@ -418,15 +421,6 @@ class DocumentIngestionPipeline:
             )
     
     def _generate_document_id(self, file_path: str) -> str:
-        """
-        Generate a unique document ID.
-        
-        Args:
-            file_path: Path to the document file
-            
-        Returns:
-            Unique document ID
-        """
         # Use file path and modification time for uniqueness
         file_path_obj = Path(file_path)
         if file_path_obj.exists():
@@ -438,21 +432,14 @@ class DocumentIngestionPipeline:
         return hashlib.md5(content.encode()).hexdigest()
     
     def _serialize_metadata(self, metadata: Dict[str, Any]) -> str:
-        """
-        Serialize metadata to JSON string.
-        
-        Args:
-            metadata: Metadata dictionary
-            
-        Returns:
-            JSON string
-        """
         try:
             import json
             return json.dumps(metadata, default=str, ensure_ascii=False)
         except Exception as e:
             logger.warning(f"Failed to serialize metadata: {e}")
             return "{}"
+        
+        
     
     def get_pipeline_stats(self) -> Dict[str, Any]:
         """
@@ -501,3 +488,18 @@ class DocumentIngestionPipeline:
 
 if __name__=="__main__":
     logger.info(f"Ingestion Pipe init ..")
+    
+    ## Example usage
+    import yaml
+    with open("src/config.yaml", 'r') as f:
+        config = yaml.safe_load(f)
+    pipeline = DocumentIngestionPipeline(config)
+    stats = pipeline.get_pipeline_stats()
+    logger.info(f"Pipeline stats: {stats}")
+    # Example single document ingestion
+    result = pipeline.ingest_document("data/documents/3.수불확인등록.xlsx")
+    logger.info(f"Ingestion result: {result}")
+    # Example batch ingestion
+    # batch_result = pipeline.ingest_batch(["sample_data/sample.pdf", "sample_data/sample.docx"])
+    # logger.info(f"Batch ingestion stats: {batch_result}")
+    

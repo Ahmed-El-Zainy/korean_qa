@@ -1,3 +1,9 @@
+---
+title: rag_korean_manufacturing_docs
+app_file: fixed_gradio_demo.py
+sdk: gradio
+sdk_version: 5.39.0
+---
 # 🏭 Manufacturing RAG Agent
 
 A comprehensive Retrieval-Augmented Generation (RAG) system designed specifically for manufacturing document analysis. This system can process PDFs, Excel files with embedded images, and standalone images to provide accurate answers with complete citations and metadata tracking.

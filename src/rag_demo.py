@@ -31,19 +31,13 @@ try:
     from src.rag_engine import RAGEngine, RAGResponse
     from src.metadata_manager import MetadataManager
     from src.document_processor import ProcessingStatus
+    
 except ImportError as e:
     st.error(f"Failed to import RAG components: {e}")
     st.stop()
 
 
 class RAGDemo:
-    """
-    Streamlit demo application for the Manufacturing RAG Agent.
-    
-    This demo provides a user-friendly interface for document upload,
-    question answering, and result visualization.
-    """
-    
     def __init__(self):
         """Initialize the RAG demo application."""
         self.config = None
@@ -58,7 +52,6 @@ class RAGDemo:
             st.session_state.chat_history = []
     
     def initialize_system(self):
-        """Initialize the RAG system components."""
         try:
             # Load configuration
             self.config = Config("src/config.yaml")

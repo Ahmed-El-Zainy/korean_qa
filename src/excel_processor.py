@@ -217,23 +217,11 @@ class ExcelProcessor(DocumentProcessor):
                 error_message=str(e)
             )
     
+    
     def _extract_metadata(self, workbook: openpyxl.Workbook, file_path: str) -> Dict[str, Any]:
-        """
-        Extract metadata from Excel workbook.
-        
-        Args:
-            workbook: openpyxl Workbook object
-            file_path: Path to the Excel file
-            
-        Returns:
-            Dictionary containing Excel metadata
-        """
         metadata = {}
-        
         try:
-            # Document properties
             props = workbook.properties
-            
             if props.title:
                 metadata['title'] = props.title
             if props.creator:
@@ -269,16 +257,6 @@ class ExcelProcessor(DocumentProcessor):
         return metadata
     
     def _extract_worksheet_content(self, worksheet: Worksheet, sheet_name: str) -> str:
-        """
-        Extract content from an Excel worksheet.
-        
-        Args:
-            worksheet: openpyxl Worksheet object
-            sheet_name: Name of the worksheet
-            
-        Returns:
-            Extracted content as text
-        """
         try:
             content_lines = []
             
@@ -317,17 +295,6 @@ class ExcelProcessor(DocumentProcessor):
             return ""
     
     def _extract_worksheet_images(self, worksheet: Worksheet, sheet_name: str, document_id: str) -> List[ExtractedImage]:
-        """
-        Extract embedded images from an Excel worksheet.
-        
-        Args:
-            worksheet: openpyxl Worksheet object
-            sheet_name: Name of the worksheet
-            document_id: Document ID for image naming
-            
-        Returns:
-            List of ExtractedImage objects
-        """
         images = []
         
         try:

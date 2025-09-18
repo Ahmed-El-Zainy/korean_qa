@@ -21,7 +21,7 @@ models:
   alternative_models:
     - "openai/gpt-oss-20b"           # Faster, less capable
     - "qwen/qwen3-32b"             # Good balance
-
+    
 # RAG System Configuration
 rag_system:
   # Chunking settings
@@ -38,7 +38,7 @@ rag_system:
   
   # Generation settings
   temperature: 0.1
-  max_tokens: 1024
+  max_tokens: 4096
   
   # Performance settings
   batch_size: 32
@@ -96,12 +96,14 @@ performance:
   # Rate limiting
   siliconflow_requests_per_minute: 60
   groq_requests_per_minute: 30
-  
-  # Timeouts
+  api_timeout: 60  # Increased timeout for large documents
+  max_retries: 3
+  retry_delay: 5
+  batch_size: 32  # Consider reducing this for large documents
   api_timeout_seconds: 30
-  
-  # Threading
   max_workers: 4
+  
+
 
 # Cache Configuration
 cache:
@@ -122,3 +124,6 @@ debug:
   verbose_logging: false
   save_intermediate_results: false
   profiling_enabled: false
+
+
+  

@@ -358,17 +358,7 @@ class MetadataManager:
     def list_documents(self, status: Optional[ProcessingStatus] = None,
                       file_type: Optional[str] = None,
                       limit: int = 100) -> List[DocumentMetadata]:
-        """
-        List documents with optional filtering.
         
-        Args:
-            status: Optional status filter
-            file_type: Optional file type filter
-            limit: Maximum number of results
-            
-        Returns:
-            List of DocumentMetadata objects
-        """
         try:
             with sqlite3.connect(self.db_path) as conn:
                 cursor = conn.cursor()
@@ -424,15 +414,6 @@ class MetadataManager:
             return []
     
     def delete_document(self, doc_id: str) -> bool:
-        """
-        Delete document and all associated citations.
-        
-        Args:
-            doc_id: Document ID
-            
-        Returns:
-            True if successful, False otherwise
-        """
         try:
             with sqlite3.connect(self.db_path) as conn:
                 cursor = conn.cursor()
