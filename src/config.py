@@ -117,6 +117,8 @@ class Config:
             logger.warning(f"Optional environment variable '{key}' not found")
         return value
     
+    
+    
     @property
     def gemini_model(self) -> str:
         """Get Gemini model name (optional for RAG system)."""
@@ -152,7 +154,13 @@ class Config:
     @property
     def groq_api_key(self) -> str:
         """Get Groq API key from environment."""
-        return self.get_env_var('GROQ_API_KEY', required=False) or ""
+        GROQ_API_KEY=os.getenv('GROQ_API_KEY', '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')
+        return GROQ_API_KEY
+    
+    @property
+    def groq_url(self) -> str:
+        """Get Groq URL from environment or config."""
+        return self.get('groq_url', 'https://api.groq.com/openai/v1')
     
     @property
     def siliconflow_api_key(self) -> str:
