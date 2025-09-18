@@ -179,7 +179,8 @@ class Config:
     @property
     def qdrant_api_key(self) -> str:
         """Get Qdrant API key from environment."""
-        return self.get_env_var('QDRANT_API_KEY', required=False) or ""
+        QDRANT_API_KEY=os.getenv('QDRANT_API_KEY', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3MiOiJtIn0.L6Xwubquqwa9CXj3kVn9jiv64Cbe85vRdLv_LltuzZg')
+        return QDRANT_API_KEY
     
     @property
     def document_processing_config(self) -> Dict[str, Any]:
