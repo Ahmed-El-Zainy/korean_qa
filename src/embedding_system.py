@@ -16,10 +16,10 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 try:
     from logger.custom_logger import CustomLoggerTracker
     custom_log = CustomLoggerTracker()
-    logger = custom_log.get_logger("embedding_system_fixed")
+    logger = custom_log.get_logger("embedding_system")
 except ImportError:
     # Fallback to standard logging if custom logger not available
-    logger = logging.getLogger("embedding_system_fixed")
+    logger = logging.getLogger("embedding_system")
 
 
 
